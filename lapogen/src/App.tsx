@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { ExportDialog } from "./components/ExportDialog";
 import { PdfDialog } from "./components/PdfDialog";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { useWebSerialContext } from "./context/useWebSerialContext";
+import { useLanguage } from "./context/LanguageContext";
 import {
   clearAppData,
   isLocalStorageAvailable,
@@ -30,6 +32,7 @@ type TabType = "va" | "angle" | "frequency" | "luxamper";
 
 function App() {
   const { isSupported, isOpen, errorMessage, connect } = useWebSerialContext();
+  const { t } = useLanguage();
 
   const [appData, setAppData] = useState<AppData>(() => {
     // Try to load from localStorage first
@@ -93,9 +96,7 @@ function App() {
 
   const reset = () => {
     if (
-      window.confirm(
-        "Opravdu chcete smazat všechna naměřená data? Tato akce je nevratná."
-      )
+      window.confirm(t.resetConfirm)
     ) {
       if (isLocalStorageAvailable()) {
         clearAppData();
@@ -113,21 +114,22 @@ function App() {
     <>
       <header className="border-b border-slate-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="container flex items-center justify-between py-4">
-          <h1 className="text-xl font-semibold text-slate-900">Lapogen </h1>
+          <h1 className="text-xl font-semibold text-slate-900">{t.title} </h1>
           <div className="flex gap-2">
+            <LanguageSwitcher />
             <button
               onClick={reset}
               disabled={!isOpen}
               className="px-3 py-2 rounded-md bg-slate-300 hover:bg-slate-200 disabled:opacity-50 text-slate-700 shadow-sm"
             >
-              Reset
+              {t.reset}
             </button>
             <button
               onClick={() => setIsExportDialogOpen(true)}
               disabled={!isOpen}
               className="px-3 py-2 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white shadow-sm"
             >
-              Export
+              {t.export}
             </button>
             <button
               onClick={() => setIsPdfDialogOpen(true)}
@@ -154,7 +156,7 @@ function App() {
               disabled={!isSupported || isOpen}
               className="px-3 py-2 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white shadow-sm"
             >
-              Připojit port
+              {t.connectPort}
             </button>
           </div>
         </div>
@@ -163,8 +165,7 @@ function App() {
       {!isSupported && (
         <div className="container mt-4">
           <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-            Web Serial API není k dispozici. Použijte Chrome/Edge na
-            HTTPS/localhost.
+            {t.notSupportedMessage}
           </p>
         </div>
       )}
@@ -194,7 +195,7 @@ function App() {
                 : "bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >
-            VA Charakteristika
+            {t.vaTab}
           </button>
           <button
             role="tab"
@@ -207,7 +208,7 @@ function App() {
                 : "bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >
-            Vyzařovací charakteristika
+            {t.angleTab}
           </button>
           <button
             role="tab"
@@ -220,7 +221,7 @@ function App() {
                 : "bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >
-            Frekvenční charakteristika
+            {t.frequencyTab}
           </button>
           <button
             role="tab"
@@ -233,7 +234,7 @@ function App() {
                 : "bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >
-            Lux-Amper
+            {t.luxAmperTab}
           </button>
         </div>
       </div>
@@ -241,7 +242,7 @@ function App() {
       {!isOpen && (
         <main className="container py-6 space-y-6">
           <p className="text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-md px-3 py-2">
-            Připojte port pro zahájení měření.
+            {t.connectMessage}
           </p>
         </main>
       )}
@@ -308,7 +309,7 @@ function App() {
       <footer className="mt-16 border-t border-slate-200 bg-slate-50">
         <div className="container py-6">
           <p className="text-right text-sm text-slate-600">
-            Created by{" "}
+            {t.createdBy}{" "}
             <a
               href="https://malek.page"
               target="_blank"
