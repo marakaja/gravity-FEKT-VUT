@@ -34,13 +34,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
   }, [language]);
 
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-  };
-
   const value: LanguageContextType = {
     language,
-    setLanguage,
+    setLanguage: setLanguageState,
     t: translations[language],
   };
 
