@@ -1,17 +1,12 @@
 import { useLanguage } from "../context/LanguageContext";
-import type { Language } from "../i18n/translations";
 
 export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
 
-  const handleLanguageChange = (lang: Language) => {
-    setLanguage(lang);
-  };
-
   return (
     <div className="inline-flex rounded-md border border-slate-200 shadow-sm overflow-hidden bg-white">
       <button
-        onClick={() => handleLanguageChange("cs")}
+        onClick={() => setLanguage("cs")}
         className={`px-3 py-2 text-sm font-medium transition-colors ${
           language === "cs"
             ? "bg-slate-300 text-black"
@@ -23,7 +18,7 @@ export function LanguageSwitcher() {
         CS
       </button>
       <button
-        onClick={() => handleLanguageChange("en")}
+        onClick={() => setLanguage("en")}
         className={`px-3 py-2 text-sm font-medium border-l border-slate-200 transition-colors ${
           language === "en"
             ? "bg-slate-300 text-black"

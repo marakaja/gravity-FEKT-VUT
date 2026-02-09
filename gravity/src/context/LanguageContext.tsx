@@ -23,7 +23,11 @@ const LANGUAGE_STORAGE_KEY = "gravity-language";
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return (stored as Language) || "cs";
+    // Validate that stored value is a valid language
+    if (stored === "cs" || stored === "en") {
+      return stored;
+    }
+    return "cs"; // Default to Czech
   });
 
   useEffect(() => {
