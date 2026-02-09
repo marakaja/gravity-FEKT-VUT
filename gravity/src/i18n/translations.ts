@@ -15,7 +15,7 @@ export const translations = {
     connectMessage: "Připojte port pro zahájení měření.",
     
     // Footer
-    createdBy: "Created by",
+    createdBy: "Vytvořil",
   },
   en: {
     // Header

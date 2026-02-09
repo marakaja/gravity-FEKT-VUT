@@ -18,7 +18,7 @@ export const translations = {
     resetConfirm: "Opravdu chcete smazat všechna naměřená data? Tato akce je nevratná.",
     
     // Footer
-    createdBy: "Created by",
+    createdBy: "Vytvořil",
   },
   en: {
     // Header
