@@ -1,5 +1,6 @@
 import { type FC, useState, useEffect, useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import { useLanguage } from "../context/LanguageContext";
 import { useWebSerialContext } from "../context/useWebSerialContext";
 
 type MeasurementDialogProps = {
@@ -20,6 +21,7 @@ export const MeasurementDialog: FC<MeasurementDialogProps> = ({
   angleThreshold = 5,
 }) => {
   const { parsedData, measureAll } = useWebSerialContext();
+  const { t } = useLanguage();
   const [samples, setSamples] = useState<number[]>([]);
   const [isCollecting, setIsCollecting] = useState(false);
   const intervalRef = useRef<number | null>(null);
@@ -63,7 +65,7 @@ export const MeasurementDialog: FC<MeasurementDialogProps> = ({
 
   const handleSave = () => {
     if (samples.length === 0) {
-      alert("Nejdříve spusťte sběr dat");
+      alert(t.measurementDialogStartFirst);
       return;
     }
     onSave(average);
@@ -90,11 +92,17 @@ export const MeasurementDialog: FC<MeasurementDialogProps> = ({
               >
                 <div className="text-sm font-medium">
                   {isAngleOk
-                    ? "✓ Úhel ramene je v pořádku"
-                    : `⚠ Úhel ramene mimo toleranci (±${angleThreshold}°)`}
+                    ? t.measurementDialogAngleOk
+                    : t.measurementDialogAngleOutOfRange.replace(
+                        "{threshold}",
+                        String(angleThreshold)
+                      )}
                 </div>
                 <div className="text-xs mt-1">
-                  Aktuální úhel: {parsedData.angle.toFixed(1)}°
+                  {t.measurementDialogCurrentAngle.replace(
+                    "{angle}",
+                    parsedData.angle.toFixed(1)
+                  )}
                 </div>
               </div>
             )}
@@ -102,7 +110,7 @@ export const MeasurementDialog: FC<MeasurementDialogProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-slate-50 p-3 rounded-md">
                 <div className="text-xs text-slate-600">
-                  Aktuální napětí (ADC)
+                  {t.measurementDialogCurrentVoltage}
                 </div>
                 <div className="text-2xl font-semibold text-slate-900">
                   {parsedData.voltage.toFixed(0)}
@@ -110,7 +118,10 @@ export const MeasurementDialog: FC<MeasurementDialogProps> = ({
               </div>
               <div className="bg-slate-50 p-3 rounded-md">
                 <div className="text-xs text-slate-600">
-                  Průměr ({samples.length})
+                  {t.measurementDialogAverage.replace(
+                    "{count}",
+                    String(samples.length)
+                  )}
                 </div>
                 <div className="text-2xl font-semibold text-slate-900">
                   {average.toFixed(1)}
@@ -120,13 +131,17 @@ export const MeasurementDialog: FC<MeasurementDialogProps> = ({
 
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div className="bg-slate-50 p-2 rounded-md">
-                <div className="text-xs text-slate-500">Peek (ADC)</div>
+                <div className="text-xs text-slate-500">
+                  {t.measurementDialogPeek}
+                </div>
                 <div className="font-semibold text-slate-900">
                   {parsedData.peek.toFixed(0)}
                 </div>
               </div>
               <div className="bg-slate-50 p-2 rounded-md">
-                <div className="text-xs text-slate-500">Úhel</div>
+                <div className="text-xs text-slate-500">
+                  {t.measurementDialogAngleLabel}
+                </div>
                 <div className="font-semibold text-slate-900">
                   {parsedData.angle.toFixed(1)}°
                 </div>
@@ -139,21 +154,21 @@ export const MeasurementDialog: FC<MeasurementDialogProps> = ({
                   onClick={() => setIsCollecting(true)}
                   className="flex-1 px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 text-white"
                 >
-                  Spustit sběr
+                  {t.measurementDialogStartCollect}
                 </button>
               ) : (
                 <button
                   onClick={() => setIsCollecting(false)}
                   className="flex-1 px-4 py-2 rounded-md bg-amber-600 hover:bg-amber-500 text-white"
                 >
-                  Zastavit sběr
+                  {t.measurementDialogStopCollect}
                 </button>
               )}
               <button
                 onClick={() => setSamples([])}
                 className="px-4 py-2 rounded-md bg-slate-300 hover:bg-slate-200 text-slate-700"
               >
-                Reset
+                {t.measurementDialogReset}
               </button>
             </div>
 
@@ -165,13 +180,13 @@ export const MeasurementDialog: FC<MeasurementDialogProps> = ({
                 }
                 className="flex-1 px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white"
               >
-                Uložit měření
+                {t.measurementDialogSave}
               </button>
               <button
                 onClick={onClose}
                 className="px-4 py-2 rounded-md bg-slate-300 hover:bg-slate-200 text-slate-700"
               >
-                Zrušit
+                {t.measurementDialogCancel}
               </button>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FC } from "react";
 import { DataTable, type Column } from "../components/DataTable";
 import { GaugeChart } from "../components/GaugeChart";
 import { XYChart } from "../components/XYChart";
+import { useLanguage } from "../context/LanguageContext";
 import { useWebSerialContext } from "../context/useWebSerialContext";
 
 export type VAData = {
@@ -21,6 +22,7 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
   isConnected,
 }) => {
   const { setParameters, parsedData, measureAll } = useWebSerialContext();
+  const { t } = useLanguage();
   const [currentInput, setCurrentInput] = useState("");
   const [logarithmicX, setLogarithmicX] = useState(false);
   const intervalRef = useRef<number | null>(null);
@@ -76,7 +78,7 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
 
   const handleSaveMeasurement = () => {
     if (parsedData.voltage === undefined || parsedData.voltage === 0) {
-      alert("Nejdříve změřte napětí");
+      alert(t.vaAlertMeasureVoltage);
       return;
     }
     const current = parseFloat(currentInput);
@@ -97,19 +99,19 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
   const columns: Column<VAData>[] = [
     {
       key: "current",
-      label: "Proud [uA]",
+      label: t.vaCurrentLabel,
       render: (item) => item.current.toFixed(0),
     },
     {
       key: "voltage",
-      label: "Napětí [mV]",
+      label: t.vaYAxisLabel,
       render: (item) => item.voltage.toFixed(3),
     },
   ];
 
   const chartSeries = [
     {
-      label: "VA Charakteristika",
+      label: t.vaChartTitle,
       data: data
         .map((d) => ({ x: d.current, y: d.voltage }))
         .sort((a, b) => a.x - b.x),
@@ -121,16 +123,15 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
     <main className="container py-6 space-y-6">
       <section className="card p-4">
         <h3 className="text-slate-900 font-medium mb-3">
-          Měření VA charakteristiky
+          {t.vaTitle}
         </h3>
         <p className="text-slate-700 text-sm mb-4">
-          Měření závislosti napětí na diodě na proudu. Nastavte proudový offset
-          a měřte napětí.
+          {t.vaDescription}
         </p>
         <div className="flex gap-4 items-center">
           <div className="flex-1 min-w-0">
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Proud [uA]
+              {t.vaCurrentLabel}
             </label>
             <input
               type="number"
@@ -162,7 +163,7 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
                     }
                     className="w-full px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white"
                   >
-                    Přidat do grafu
+                    {t.vaAddPoint}
                   </button>
                 </div>
               );
@@ -191,9 +192,9 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
 
       <section className="card p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-slate-900 font-medium">VA Charakteristika</h3>
+          <h3 className="text-slate-900 font-medium">{t.vaChartTitle}</h3>
           <label className="flex items-center gap-2 cursor-pointer">
-            <span className="text-sm text-slate-700">Logaritmická osa X</span>
+            <span className="text-sm text-slate-700">{t.vaLogX}</span>
             <input
               type="checkbox"
               checked={logarithmicX}
@@ -204,8 +205,8 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
         </div>
         <XYChart
           title=""
-          xAxisLabel="Proud [uA]"
-          yAxisLabel="Napětí [mV]"
+          xAxisLabel={t.vaXAxisLabel}
+          yAxisLabel={t.vaYAxisLabel}
           series={chartSeries}
           showLine={false}
           logarithmicX={logarithmicX}
@@ -217,12 +218,14 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
       </section>
 
       <section className="card p-4">
-        <h3 className="text-slate-900 font-medium mb-3">Tabulka měření</h3>
+        <h3 className="text-slate-900 font-medium mb-3">
+          {t.vaTableTitle}
+        </h3>
         <DataTable
           columns={columns}
           data={data.sort((a, b) => a.current - b.current)}
           onDelete={handleDelete}
-          emptyMessage="Žádná měření"
+          emptyMessage={t.vaEmptyMeasurements}
         />
       </section>
     </main>

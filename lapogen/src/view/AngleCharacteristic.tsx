@@ -3,6 +3,7 @@ import { AngleGaugeChart } from "../components/AngleGaugeChart";
 import { DataTable, type Column } from "../components/DataTable";
 import { GaugeChart } from "../components/GaugeChart";
 import { PolarChart } from "../components/PolarChart";
+import { useLanguage } from "../context/LanguageContext";
 import { useWebSerialContext } from "../context/useWebSerialContext";
 
 export type AngleData = {
@@ -26,6 +27,7 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
   isConnected,
 }) => {
   const { setParameters, parsedData, measureAll } = useWebSerialContext();
+  const { t } = useLanguage();
   const [amplitudeInput, setAmplitudeInput] = useState("");
   const intervalRef = useRef<number | null>(null);
   const debounceRef = useRef<number | null>(null);
@@ -156,7 +158,7 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
       parsedData.amp === undefined ||
       parsedData.amp <= 0
     ) {
-      alert("Čekejte na měření ze zařízení");
+      alert(t.angleAlertWaitForDevice);
       return;
     }
 
@@ -195,17 +197,17 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
   const columns: Column<AngleData>[] = [
     {
       key: "amplitude",
-      label: "Amplituda [uA]",
+      label: t.angleColumnAmplitude,
       render: (item) => item.amplitude.toFixed(0),
     },
     {
       key: "angle",
-      label: "Úhel [°]",
+      label: t.angleColumnAngle,
       render: (item) => item.angle.toFixed(1),
     },
     {
       key: "voltage",
-      label: "Napětí [V]",
+      label: t.angleColumnVoltage,
       render: (item) => item.voltage.toFixed(3),
     },
   ];
@@ -219,15 +221,14 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
   return (
     <main className="container py-6 space-y-6">
       <section className="card p-4">
-        <h3 className="text-slate-900 font-medium mb-3">Měření úhlu LED</h3>
+        <h3 className="text-slate-900 font-medium mb-3">{t.angleTitle}</h3>
         <p className="text-slate-700 text-sm mb-4">
-          Měření úhlu LED při různých amplitudách. Frekvence: 200 Hz, offset:
-          50% amplitudy.
+          {t.angleDescription}
         </p>
         <div className="flex gap-3 items-end">
           <div className="flex-1">
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Nastavit amplitudu [uA]
+              {t.angleSetAmplitudeLabel}
             </label>
             <input
               type="number"
@@ -243,7 +244,7 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
                 }
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="0-30000"
+              placeholder={t.angleInputPlaceholder}
             />
             {/* {isConnected &&
               parsedData.amp !== undefined &&
@@ -264,13 +265,15 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
             }
             className="px-4 py-2 rounded-md bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white"
           >
-            Přidat bod
+            {t.angleAddPoint}
           </button>
         </div>
       </section>
 
       <section className="card p-4">
-        <h3 className="text-slate-900 font-medium mb-4">Aktuální hodnoty</h3>
+        <h3 className="text-slate-900 font-medium mb-4">
+          {t.angleCurrentValuesTitle}
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AngleGaugeChart
             value={(() => {
@@ -288,7 +291,7 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
               }
               return 0;
             })()}
-            min={-180}
+            min={-{t.angleDetectorLabel}
             max={180}
             label="Úhel detektoru"
             unit="°"
@@ -307,23 +310,25 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
             })()}
             min={0}
             max={3300}
-            label="Napětí detektoru"
+            label={t.angleVoltageLabel}
             unit="V"
           />
         </div>
       </section>
 
       <section className="card p-4">
-        <PolarChart title="Úhlová charakteristika" data={polarData} />
+        <PolarChart title={t.anglePolarTitle} data={polarData} />
       </section>
 
       <section className="card p-4">
-        <h3 className="text-slate-900 font-medium mb-3">Tabulka měření</h3>
+        <h3 className="text-slate-900 font-medium mb-3">
+          {t.angleTableTitle}
+        </h3>
         <DataTable
           columns={columns}
           data={data}
           onDelete={handleDelete}
-          emptyMessage="Žádná měření"
+          emptyMessage={t.angleEmptyMeasurements}
         />
       </section>
     </main>

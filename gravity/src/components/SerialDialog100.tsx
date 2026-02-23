@@ -9,6 +9,7 @@ import {
 } from "chart.js";
 import { useEffect, useMemo, useState } from "react";
 import { Line } from "react-chartjs-2";
+import { useLanguage } from "../context/LanguageContext";
 import { useWebSerialContext } from "../context/useWebSerialContext";
 import { Modal, ModalActions, ModalContent, ModalHeader } from "./Modal";
 
@@ -30,6 +31,8 @@ type Props = {
 
 export function SerialDialog100(props: Props) {
   const { isOpen, onClose, measurementChannel, onSave } = props;
+
+  const { t } = useLanguage();
 
   const { lastLine } = useWebSerialContext();
   const [measurementActive, setMeasurementActive] = useState<boolean>(false);
@@ -98,10 +101,13 @@ export function SerialDialog100(props: Props) {
         .map((v, i) => ({ v, i }))
         .filter(({ v }) => Math.abs(v - avg) > 0.1 * avg);
       if (outliers.length > 0) {
+        const warningText = t.serialDialog100OutlierWarning.replace(
+          "{avg}",
+          avg.toFixed(2)
+        );
         return (
           <div className="mb-4 p-3 rounded-md bg-rose-50 text-rose-800 border border-rose-200">
-            ❌ Pozor některý z kmitů se liší o více než 10% od průměru (
-            {avg.toFixed(2)} ms). ❌
+            {warningText}
             <br />
             {/* Indexy: {outliers.map(({ i }) => i + 1).join(", ")} */}
           </div>
@@ -117,7 +123,12 @@ export function SerialDialog100(props: Props) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} modal size="own">
       <ModalHeader
-        title={`Měření (až 100 vzorků) - závaží ${measurementChannel}`}
+        title={t.serialDialog100Title.replace(
+          "{channel}",
+          measurementChannel === "nahoře"
+            ? t.serialDialogChannelTop
+            : t.serialDialogChannelBottom
+        )}
         onClose={onClose}
       />
       <ModalContent className="bg-white p-6">
@@ -129,14 +140,14 @@ export function SerialDialog100(props: Props) {
             disabled={measurementActive}
             className="px-3 py-2 rounded-md bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white shadow-sm"
           >
-            Start (sbírat 100)
+            {t.serialDialog100Start}
           </button>
           <button
             onClick={stop}
             disabled={!measurementActive}
             className="px-3 py-2 rounded-md bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white shadow-sm"
           >
-            Stop
+            {t.serialDialog100Stop}
           </button>
           <div className="text-black text-xl font-bold ml-auto">
             {count} / 100
@@ -146,7 +157,7 @@ export function SerialDialog100(props: Props) {
             disabled={!canSave}
             className="ml-auto px-3 py-2 rounded-md bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white shadow-sm"
           >
-            Uložit (součty po 10 z posledních 90)
+            {t.serialDialog100Save}
           </button>
         </div>
 
@@ -155,10 +166,10 @@ export function SerialDialog100(props: Props) {
             <thead className="bg-slate-50 sticky top-0">
               <tr>
                 <th className="text-left px-3 py-2 font-medium text-slate-700">
-                  #
+                  {t.serialDialogIndexHeader}
                 </th>
                 <th className="text-left px-3 py-2 font-medium text-slate-700">
-                  Perioda [ms]
+                  {t.serialDialogPeriodHeader}
                 </th>
               </tr>
             </thead>

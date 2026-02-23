@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import QRCode from "qrcode";
 import type { Pendulum1Data, Pendulum2Data } from "../App";
+import { useLanguage } from "../context/LanguageContext";
 import { decodeBase64UrlToJson } from "../lib/localStorage";
 
 interface ExportData {
@@ -11,6 +12,7 @@ interface ExportData {
 }
 
 export const ExportPage: React.FC = () => {
+  const { t, language } = useLanguage();
   const [exportData, setExportData] = useState<ExportData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +27,7 @@ export const ExportPage: React.FC = () => {
     console.log("dataParam", urlParams);
 
     if (!dataParam) {
-      setError("Chybí data v URL parametru");
+      setError(t.exportPageMissingData);
       setIsLoading(false);
       return;
     }
@@ -43,17 +45,18 @@ export const ExportPage: React.FC = () => {
         setExportData(parsedLegacy);
       } catch (legacyErr) {
         console.error("Error parsing export data:", primaryErr, legacyErr);
-        setError("Chyba při dekódování dat");
+        setError(t.exportPageDecodeError);
       } finally {
         setIsLoading(false);
       }
       return;
     }
     setIsLoading(false);
-  }, []);
+  }, [t.exportPageDecodeError, t.exportPageMissingData]);
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString("cs-CZ");
+    const locale = language === "cs" ? "cs-CZ" : "en-US";
+    return new Date(timestamp).toLocaleString(locale);
   };
 
   // Generate QR code for current export URL
@@ -87,7 +90,7 @@ export const ExportPage: React.FC = () => {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Načítání dat...</p>
+          <p className="text-slate-600">{t.exportPageLoading}</p>
         </div>
       </div>
     );
@@ -99,16 +102,16 @@ export const ExportPage: React.FC = () => {
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            Chyba při načítání
+            {t.exportPageErrorTitle}
           </h1>
           <p className="text-slate-600 mb-4">
-            {error || "Data nebyla nalezena"}
+            {error || t.exportPageNoDataFound}
           </p>
           <button
             onClick={() => window.history.back()}
             className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-md"
           >
-            Zpět
+            {t.exportPageBack}
           </button>
         </div>
       </div>
@@ -131,11 +134,12 @@ export const ExportPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">
-                Export dat - Úloha 10: Matematické kyvadlo
+                {t.exportPageTitle}
               </h1>
               <p className="text-slate-600 mt-1">
-                Data z {formatTimestamp(exportData.timestamp)} (verze{" "}
-                {exportData.version})
+                {t.exportPageDataFrom
+                  .replace("{timestamp}", formatTimestamp(exportData.timestamp))
+                  .replace("{version}", exportData.version)}
               </p>
             </div>
             <div className="flex gap-3">
@@ -156,13 +160,13 @@ export const ExportPage: React.FC = () => {
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                   />
                 </svg>
-                Tisk
+                {t.exportPagePrint}
               </button>
               <button
                 onClick={() => (window.location.href = "/")}
                 className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-md"
               >
-                Zpět
+                {t.exportPageBack}
               </button>
             </div>
           </div>
@@ -175,11 +179,12 @@ export const ExportPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 mb-2">
-                Export dat - Úloha 10: Matematické kyvadlo
+                {t.exportPageTitle}
               </h1>
               <p className="text-slate-600 text-lg">
-                Data z {formatTimestamp(exportData.timestamp)} (verze{" "}
-                {exportData.version})
+                {t.exportPageDataFrom
+                  .replace("{timestamp}", formatTimestamp(exportData.timestamp))
+                  .replace("{version}", exportData.version)}
               </p>
             </div>
             <div className="text-center">
@@ -192,7 +197,7 @@ export const ExportPage: React.FC = () => {
                 />
               </div>
               <p className="text-sm text-slate-600 mt-2">
-                QR kód pro opětovné načtení dat
+                {t.exportPageQrReload}
               </p>
             </div>
           </div>
@@ -202,7 +207,7 @@ export const ExportPage: React.FC = () => {
           {/* Kyvadlo 1 */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">
-              Stanovení pozice závaží matematického kyvadla
+              {t.exportPagePendulum1Title}
             </h2>
 
             {/* Měření */}
@@ -213,13 +218,13 @@ export const ExportPage: React.FC = () => {
                     <thead>
                       <tr className="border-b border-slate-200">
                         <th className="text-left py-2 px-3 text-slate-600">
-                          Vzdálenost závaží od konce [mm]
+                          {t.exportPagePendulum1TableDistance}
                         </th>
                         <th className="text-left py-2 px-3 text-slate-600">
-                          Perioda závaží nahoře [ms]
+                          {t.exportPagePendulum1TableTop}
                         </th>
                         <th className="text-left py-2 px-3 text-slate-600">
-                          Perioda závaží dole [ms]
+                          {t.exportPagePendulum1TableBottom}
                         </th>
                       </tr>
                     </thead>
@@ -241,22 +246,28 @@ export const ExportPage: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                <p className="text-slate-500 italic">Žádná měření</p>
+                <p className="text-slate-500 italic">
+                  {t.exportPageNoMeasurements}
+                </p>
               )}
             </div>
 
             {/* Průsečík */}
             <div className="mt-6">
               <h3 className="text-lg font-medium text-slate-700 mb-3">
-                Parametry matematického kyvadla
+                {t.exportPagePendulum1ParamsTitle}
               </h3>
               <div className="bg-slate-50 rounded-lg p-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-600">Vzdálenost: </span>
+                  <span className="text-sm text-slate-600">
+                    {t.exportPageDistanceLabel}{" "}
+                  </span>
                   <span className="text-lg font-semibold text-slate-900">
                     {exportData.pendulum1.intersection.distance.toFixed(2)} mm
                   </span>
-                  <span className="text-sm text-slate-600 ml-4">Čas: </span>
+                  <span className="text-sm text-slate-600 ml-4">
+                    {t.exportPageTimeLabel}{" "}
+                  </span>
                   <span className="text-lg font-semibold text-slate-900">
                     {exportData.pendulum1.intersection.time.toFixed(1)} ms
                   </span>
@@ -268,7 +279,7 @@ export const ExportPage: React.FC = () => {
           {/* Kyvadlo 2 */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">
-              Postupná metoda měření
+              {t.exportPagePendulum2Title}
             </h2>
 
             {/* Měření */}
@@ -280,13 +291,13 @@ export const ExportPage: React.FC = () => {
                     <thead>
                       <tr className="border-b border-slate-200">
                         <th className="text-left py-2 px-3 text-slate-600">
-                          Pořadí kmitu
+                          {t.exportPagePendulum2TableOrder}
                         </th>
                         <th className="text-left py-2 px-3 text-slate-600">
-                          Čas kmitu - závaží nahoře [ms]
+                          {t.exportPagePendulum2TableTop}
                         </th>
                         <th className="text-left py-2 px-3 text-slate-600">
-                          Čas kmitu - závaží dole [ms]
+                          {t.exportPagePendulum2TableBottom}
                         </th>
                       </tr>
                     </thead>
@@ -330,7 +341,9 @@ export const ExportPage: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                <p className="text-slate-500 italic">Žádná měření</p>
+                <p className="text-slate-500 italic">
+                  {t.exportPageNoMeasurements}
+                </p>
               )}
             </div>
           </div>

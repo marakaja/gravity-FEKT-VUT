@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { AppData } from "../App";
+import { useLanguage } from "../context/LanguageContext";
 import { decodeBase64UrlToJson } from "../lib/localStorage";
 import type { AngleData } from "./AngleCharacteristic";
 import type { FrequencyData } from "./FrequencyCharacteristic";
@@ -25,6 +26,7 @@ interface ExportData extends AppData {
 }
 
 export const ExportPage: React.FC = () => {
+  const { t, language } = useLanguage();
   const [exportData, setExportData] = useState<ExportData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +41,7 @@ export const ExportPage: React.FC = () => {
     console.log("dataParam", urlParams);
 
     if (!dataParam) {
-      setError("Chybí data v URL parametru");
+      setError(t.exportPageErrorMissingData);
       setIsLoading(false);
       return;
     }
@@ -52,7 +54,7 @@ export const ExportPage: React.FC = () => {
       if (decompressed) {
         setExportData(decompressed);
       } else {
-        setError("Chyba při dekompresi dat");
+        setError(t.exportPageErrorDecompress);
       }
     } catch (primaryErr) {
       try {
@@ -63,11 +65,11 @@ export const ExportPage: React.FC = () => {
         if (decompressed) {
           setExportData(decompressed);
         } else {
-          setError("Chyba při dekompresi dat");
+          setError(t.exportPageErrorDecompress);
         }
       } catch (legacyErr) {
         console.error("Error parsing export data:", primaryErr, legacyErr);
-        setError("Chyba při dekódování dat");
+        setError(t.exportPageErrorDecode);
       } finally {
         setIsLoading(false);
       }
@@ -144,7 +146,8 @@ export const ExportPage: React.FC = () => {
   };
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString("cs-CZ");
+    const locale = language === "cs" ? "cs-CZ" : "en-US";
+    return new Date(timestamp).toLocaleString(locale);
   };
 
   // Generate QR code for current export URL
@@ -178,7 +181,7 @@ export const ExportPage: React.FC = () => {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Načítání dat...</p>
+          <p className="text-slate-600">{t.exportPageLoadingData}</p>
         </div>
       </div>
     );
@@ -190,16 +193,16 @@ export const ExportPage: React.FC = () => {
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            Chyba při načítání
+            {t.exportPageErrorTitle}
           </h1>
           <p className="text-slate-600 mb-4">
-            {error || "Data nebyla nalezena"}
+            {error || t.exportPageDataNotFound}
           </p>
           <button
             onClick={() => window.history.back()}
             className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-md"
           >
-            Zpět
+            {t.exportPageBackButton}
           </button>
         </div>
       </div>
@@ -214,10 +217,13 @@ export const ExportPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">
-                Export dat - LED Charakteristiky
+                {t.exportPageTitle}
               </h1>
               <p className="text-slate-600 mt-1">
-                Data z {formatTimestamp(exportData.timestamp)}
+                {t.exportPageDataFrom.replace(
+                  "{timestamp}",
+                  formatTimestamp(exportData.timestamp)
+                )}
               </p>
             </div>
             <div className="flex gap-3">
@@ -238,13 +244,13 @@ export const ExportPage: React.FC = () => {
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                   />
                 </svg>
-                Tisk
+                {t.exportPagePrintButton}
               </button>
               <button
                 onClick={() => (window.location.href = "/")}
                 className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-md"
               >
-                Zpět
+                {t.exportPageBackButton}
               </button>
             </div>
           </div>
@@ -257,10 +263,13 @@ export const ExportPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 mb-2">
-                Export dat - LED Charakteristiky
+                {t.exportPageTitle}
               </h1>
               <p className="text-slate-600 text-lg">
-                Data z {formatTimestamp(exportData.timestamp)}
+                {t.exportPageDataFrom.replace(
+                  "{timestamp}",
+                  formatTimestamp(exportData.timestamp)
+                )}
               </p>
             </div>
             <div className="text-center">
@@ -283,7 +292,7 @@ export const ExportPage: React.FC = () => {
           {/* VA Characteristic */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">
-              VA Charakteristika
+              {t.exportPageVATitle}
             </h2>
 
             {exportData.vaCharacteristic.length > 0 ? (
@@ -292,10 +301,10 @@ export const ExportPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Proud [uA]
+                        {t.exportPageVACurrent}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Napětí [mV]
+                        {t.exportPageVAVoltage}
                       </th>
                     </tr>
                   </thead>
@@ -316,14 +325,14 @@ export const ExportPage: React.FC = () => {
                 </table>
               </div>
             ) : (
-              <p className="text-slate-500 italic">Žádná měření</p>
+              <p className="text-slate-500 italic">{t.exportPageNoMeasurements}</p>
             )}
           </div>
 
           {/* Angle Characteristic */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">
-              Úhlová charakteristika
+              {t.exportPageAngleTitle}
             </h2>
 
             {exportData.angleCharacteristic.length > 0 ? (
@@ -332,13 +341,13 @@ export const ExportPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Amplituda [uA]
+                        {t.exportPageAngleAmplitude}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Úhel [°]
+                        {t.exportPageAngleAngle}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Napětí [V]
+                        {t.exportPageAngleVoltage}
                       </th>
                     </tr>
                   </thead>
@@ -356,14 +365,14 @@ export const ExportPage: React.FC = () => {
                 </table>
               </div>
             ) : (
-              <p className="text-slate-500 italic">Žádná měření</p>
+              <p className="text-slate-500 italic">{t.exportPageNoMeasurements}</p>
             )}
           </div>
 
           {/* Frequency Characteristic */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">
-              Frekvenční charakteristika
+              {t.exportPageFrequencyTitle}
             </h2>
 
             {exportData.frequencyCharacteristic.length > 0 ? (
@@ -372,13 +381,13 @@ export const ExportPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Amplituda [uA]
+                        {t.exportPageFrequencyAmplitude}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Frekvence [Hz]
+                        {t.exportPageFrequencyFrequency}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Napětí [V]
+                        {t.exportPageFrequencyVoltage}
                       </th>
                     </tr>
                   </thead>
@@ -402,14 +411,14 @@ export const ExportPage: React.FC = () => {
                 </table>
               </div>
             ) : (
-              <p className="text-slate-500 italic">Žádná měření</p>
+              <p className="text-slate-500 italic">{t.exportPageNoMeasurements}</p>
             )}
           </div>
 
           {/* Lux-Amper Characteristic */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">
-              Lux-Amper charakteristika
+              {t.exportPageLuxTitle}
             </h2>
 
             {exportData.luxAmper.length > 0 ? (
@@ -418,10 +427,10 @@ export const ExportPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Amplituda [uA]
+                        {t.exportPageLuxAmplitude}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        Napětí [mV]
+                        {t.exportPageLuxVoltage}
                       </th>
                     </tr>
                   </thead>
@@ -442,7 +451,7 @@ export const ExportPage: React.FC = () => {
                 </table>
               </div>
             ) : (
-              <p className="text-slate-500 italic">Žádná měření</p>
+              <p className="text-slate-500 italic">{t.exportPageNoMeasurements}</p>
             )}
           </div>
         </div>

@@ -9,6 +9,7 @@ import {
 import type { Pendulum1Data } from "../App";
 import { SerialDialog } from "../components/SerialDialog";
 import { XYChart } from "../components/XYChart";
+import { useLanguage } from "../context/LanguageContext";
 
 // Simple linear type for points used in charts and regressions
 type XYPoint = { x: number; y: number };
@@ -159,6 +160,7 @@ export const Pendulum1: FC<Pendulum1Props> = ({
   setPendulum1Data: setMeasurements,
   pendulum1Data: measurements,
 }) => {
+  const { t } = useLanguage();
   const [localError, setLocalError] = useState<string>("");
 
   // Dialog + measurement flow
@@ -180,7 +182,7 @@ export const Pendulum1: FC<Pendulum1Props> = ({
   function saveMeasurement(avg: number) {
     const vA = Number(inputValueA);
     if (!Number.isFinite(vA)) {
-      setLocalError("Zadejte platné valueA.");
+      setLocalError(t.pendulum1InvalidDistance);
       return;
     }
 
@@ -353,32 +355,34 @@ export const Pendulum1: FC<Pendulum1Props> = ({
               disabled={!isOpen}
               className="px-3 mt-2 py-2 rounded-md bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white shadow-sm"
             >
-              Nové měření
+              {t.pendulum1NewMeasurement}
             </button>
           </span>
         </section>
 
         <section className="card p-4">
           <h3 className="text-slate-900 font-medium mb-3">
-            Stanovení polohy závaží
+            {t.pendulum1PositionTitle}
           </h3>
           {quadraticIntersections.length > 1 && (
             <div className="text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2 mb-3">
-              ❌ Pozor: Existuje více než jeden průsečík. ❌
+              {t.pendulum1MultipleIntersectionsWarning}
             </div>
           )}
           {measurements.intersection ? (
             <div className="flex flex-wrap gap-6 text-slate-900">
               <div>
                 <div className="text-xs text-slate-600">
-                  Vzdálenost závaří od konce
+                  {t.pendulum1DistanceLabel}
                 </div>
                 <div className="text-xl">
                   {measurements.intersection.distance.toFixed(2)} mm
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-600">Perioda</div>
+                <div className="text-xs text-slate-600">
+                  {t.pendulum1PeriodLabel}
+                </div>
                 <div className="text-xl">
                   {measurements.intersection.time.toFixed(2)} ms
                 </div>
@@ -386,25 +390,27 @@ export const Pendulum1: FC<Pendulum1Props> = ({
             </div>
           ) : (
             <div className="text-slate-700">
-              Nedostatek dat nebo přímky jsou rovnoběžné.
+              {t.pendulum1InsufficientData}
             </div>
           )}
         </section>
 
         <section className="card p-4">
-          <h3 className="text-slate-900 font-medium mb-3">Tabulka měření</h3>
+          <h3 className="text-slate-900 font-medium mb-3">
+            {t.pendulum1MeasurementsTitle}
+          </h3>
           <div className="max-h-64 overflow-auto rounded-md border border-slate-200">
             <table className="min-w-full text-sm text-slate-900">
               <thead className="bg-slate-50 sticky top-0">
                 <tr>
                   <th className="text-left px-3 py-2 font-medium text-slate-700">
-                    Vzdálenost [mm]
+                    {t.pendulum1TableDistance}
                   </th>
                   <th className="text-left px-3 py-2 font-medium text-slate-700">
-                    Závaží nahoře [ms]
+                    {t.pendulum1TableTop}
                   </th>
                   <th className="text-left px-3 py-2 font-medium text-slate-700">
-                    Závaží dole [ms]
+                    {t.pendulum1TableBottom}
                   </th>
                 </tr>
               </thead>
@@ -421,7 +427,7 @@ export const Pendulum1: FC<Pendulum1Props> = ({
                     return (
                       <tr>
                         <td className="px-3 py-3 text-slate-700" colSpan={3}>
-                          Žádná měření
+                          {t.pendulum1NoMeasurements}
                         </td>
                       </tr>
                     );

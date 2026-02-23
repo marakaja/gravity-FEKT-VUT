@@ -1,6 +1,7 @@
 import { useState, type Dispatch, type FC, type SetStateAction } from "react";
 import { SerialDialog100 } from "../components/SerialDialog100";
 import type { Pendulum2Data } from "../App";
+import { useLanguage } from "../context/LanguageContext";
 
 type Channel = "nahoře" | "dole";
 
@@ -15,6 +16,7 @@ export const Pendulum2: FC<Pendulum2Props> = ({
   pendulum2Data,
   intersection,
 }) => {
+  const { t } = useLanguage();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementChannel, setMeasurementChannel] =
     useState<Channel>("nahoře");
@@ -39,17 +41,9 @@ export const Pendulum2: FC<Pendulum2Props> = ({
     setDialogOpen(false);
   }
 
-  const descriptionLabels = [
-    "Čas 10. kmitu",
-    "Čas 20. kmitu",
-    "Čas 30. kmitu",
-    "Čas 40. kmitu",
-    "Čas 50. kmitu",
-    "Čas 60. kmitu",
-    "Čas 70. kmitu",
-    "Čas 80. kmitu",
-    "Čas 90. kmitu",
-  ];
+  const descriptionLabels = [10, 20, 30, 40, 50, 60, 70, 80, 90].map((count) =>
+    t.pendulum2OscillationTimeLabel.replace("{count}", String(count))
+  );
 
   return (
     <div className="container p-4 space-y-4">
@@ -58,21 +52,21 @@ export const Pendulum2: FC<Pendulum2Props> = ({
           className="px-3 py-2 rounded-md bg-sky-600 hover:bg-sky-500 text-white shadow-sm"
           onClick={() => openDialogFor("nahoře")}
         >
-          Otevřít měření pro závaží nahoře
+          {t.pendulum2OpenTop}
         </button>
         <button
           className="px-3 py-2 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm"
           onClick={() => openDialogFor("dole")}
         >
-          Otevřít měření pro závaží dole
+          {t.pendulum2OpenBottom}
         </button>
       </div>
 
       <section className="card p-4">
         <h3 className="text-slate-900 font-medium mb-3">
-          Vypočteno na základě proložení předchozího měření: Vzdálenost závaží
-          od konce - {intersection.distance.toFixed(2)} mm, Odhadovaná perioda -{" "}
-          {intersection.time.toFixed(0)} ms
+          {t.pendulum2ComputedSummary
+            .replace("{distance}", intersection.distance.toFixed(2))
+            .replace("{time}", intersection.time.toFixed(0))}
         </h3>
       </section>
 
@@ -81,13 +75,13 @@ export const Pendulum2: FC<Pendulum2Props> = ({
           <thead className="bg-slate-50">
             <tr>
               <th className="text-left px-3 py-2 font-medium text-slate-700">
-                Popis
+                {t.pendulum2TableDescription}
               </th>
               <th className="text-left px-3 py-2 font-medium text-slate-700">
-                Hodnoty nahoře [ms]
+                {t.pendulum2TableTop}
               </th>
               <th className="text-left px-3 py-2 font-medium text-slate-700">
-                Hodnoty dole [ms]
+                {t.pendulum2TableBottom}
               </th>
             </tr>
           </thead>

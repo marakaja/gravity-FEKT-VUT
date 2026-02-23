@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FC } from "react";
 import { DataTable, type Column } from "../components/DataTable";
 import { XYChart } from "../components/XYChart";
+import { useLanguage } from "../context/LanguageContext";
 import { useWebSerialContext } from "../context/useWebSerialContext";
 
 export type FrequencyData = {
@@ -22,6 +23,7 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
   isConnected,
 }) => {
   const { setParameters, parsedData, measureAll } = useWebSerialContext();
+  const { t } = useLanguage();
   const [amplitudeInput, setAmplitudeInput] = useState("");
   const [frequencyInput, setFrequencyInput] = useState("");
   const [logarithmicY, setLogarithmicY] = useState(false);
@@ -53,20 +55,21 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
     const frequency = parseFloat(frequencyInput);
 
     if (isNaN(amplitude) || amplitude < 0 || amplitude > 30000) {
-      alert("Zadejte platnou amplitudu v rozsahu 0-30000 uA");
+      alert(t.frequencyAlertInvalidAmplitude);
       return;
     }
     if (isNaN(frequency) || frequency < 1 || frequency > 200000) {
-      alert("Zadejte platnou frekvenci v rozsahu 1-200000 Hz");
+      alert(t.frequencyAlertInvalidFrequency);
       return;
     }
 
     // Check angle before opening dialog - arm must be at 0° with ±5° tolerance
     if (parsedData.angle === undefined || Math.abs(parsedData.angle) > 5) {
       alert(
-        `Rameno musí být v nulovém úhlu (±5°). Aktuální úhel: ${
+        t.frequencyAlertAngleNotZero.replace(
+          "{angle}",
           parsedData.angle?.toFixed(1) ?? "N/A"
-        }°`
+        )
       );
       return;
     }
@@ -77,7 +80,9 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
     );
     if (exists) {
       alert(
-        `Bod s amplitudou ${amplitude} uA a frekvencí ${frequency} Hz již existuje.`
+        t.frequencyAlertDuplicatePoint
+          .replace("{amplitude}", amplitude.toString())
+          .replace("{frequency}", frequency.toString())
       );
       return;
     }
@@ -109,17 +114,17 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
   const columns: Column<FrequencyData>[] = [
     {
       key: "amplitude",
-      label: "Amplituda [uA]",
+      label: t.frequencyColumnAmplitude,
       render: (item) => item.amplitude.toFixed(0),
     },
     {
       key: "frequency",
-      label: "Frekvence [Hz]",
+      label: t.frequencyColumnFrequency,
       render: (item) => item.frequency.toFixed(1),
     },
     {
       key: "voltage",
-      label: "Napětí [V]",
+      label: t.frequencyColumnVoltage,
       render: (item) => item.voltage.toFixed(3),
     },
   ];
@@ -151,16 +156,16 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
       <section className="card p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-slate-900 font-medium">
-            Frekvenční charakteristika
+            {t.frequencyTitle}
           </h3>
         </div>
         <p className="text-slate-700 text-sm mb-4">
-          Měření závislosti napětí na frekvenci. Offset: 50% amplitudy.
+          {t.frequencyDescription}
         </p>
         <div className="flex gap-3 items-end">
           <div className="flex-1">
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Amplituda [uA]
+              {t.frequencyAmplitudeLabel}
             </label>
             <input
               type="number"
@@ -176,12 +181,12 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
                 }
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="0-30000"
+              placeholder={t.frequencyAmplitudePlaceholder}
             />
           </div>
           <div className="flex-1">
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Frekvence [Hz]
+              {t.frequencyFrequencyLabel}
             </label>
             <input
               type="number"
@@ -197,7 +202,7 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
                 }
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="1-200000"
+              placeholder={t.frequencyFrequencyPlaceholder}
             />
           </div>
           <button
@@ -205,7 +210,7 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
             disabled={!isConnected || !amplitudeInput || !frequencyInput}
             className="px-4 py-2 rounded-md bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white"
           >
-            Přidat bod
+            {t.frequencyAddPoint}
           </button>
         </div>
       </section>
@@ -214,10 +219,10 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
         {" "}
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-slate-900 font-medium">
-            Frekvenční charakteristika
+            {t.frequencyChartTitle}
           </h3>
           <label className="flex items-center gap-2 cursor-pointer">
-            <span className="text-sm text-slate-700">Logaritmická osa Y</span>
+            <span className="text-sm text-slate-700">{t.frequencyLogarithmicY}</span>
             <input
               type="checkbox"
               checked={logarithmicY}
@@ -228,8 +233,8 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
         </div>
         <XYChart
           title=""
-          xAxisLabel="Frekvence [Hz]"
-          yAxisLabel="Napětí [V]"
+          xAxisLabel={t.frequencyXAxisLabel}
+          yAxisLabel={t.frequencyYAxisLabel}
           series={chartSeries}
           logarithmicX={true}
           logarithmicY={logarithmicY}
@@ -242,13 +247,13 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
       </section>
 
       <section className="card p-4">
-        <h3 className="text-slate-900 font-medium mb-3">Tabulka měření</h3>
+        <h3 className="text-slate-900 font-medium mb-3">{t.frequencyTableTitle}</h3>
 
         <DataTable
           columns={columns}
           data={data}
           onDelete={handleDelete}
-          emptyMessage="Žádná měření"
+          emptyMessage={t.frequencyEmptyMeasurements}
         />
       </section>
     </main>

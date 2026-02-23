@@ -134,7 +134,7 @@ function App() {
             <button
               onClick={() => setIsPdfDialogOpen(true)}
               className="px-3 py-2 rounded-md bg-yellow-200 hover:bg-yellow-300 disabled:opacity-50 text-black shadow-sm flex items-center justify-center"
-              title="Export"
+              title={t.pdfButtonTitle}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -181,7 +181,7 @@ function App() {
       <div className="container mt-4">
         <div
           role="tablist"
-          aria-label="Měření"
+          aria-label={t.tabsAriaLabel}
           className="inline-flex rounded-md border border-slate-200 shadow-sm overflow-hidden"
         >
           <button

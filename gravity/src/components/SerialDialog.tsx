@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
+import { useLanguage } from "../context/LanguageContext";
 import { useWebSerialContext } from "../context/useWebSerialContext";
 import { Modal, ModalActions, ModalContent, ModalHeader } from "./Modal";
 
@@ -23,6 +24,8 @@ export function SerialDialog(props: Props) {
     setMeasurementChannel,
     onSave,
   } = props;
+
+  const { t } = useLanguage();
 
   const { lastLine } = useWebSerialContext();
   const [measurementActive, setMeasurementActive] = useState<boolean>(false);
@@ -78,12 +81,12 @@ export function SerialDialog(props: Props) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} modal size="md">
-      <ModalHeader title="Měření periody" onClose={onClose} />
+      <ModalHeader title={t.serialDialogTitle} onClose={onClose} />
       <ModalContent className="bg-white p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <label className="flex flex-col gap-1">
             <span className="text-sm text-slate-600">
-              Vzdálenost závaží od konce [mm]
+              {t.serialDialogDistanceLabel}
             </span>
             <input
               type="number"
@@ -99,7 +102,9 @@ export function SerialDialog(props: Props) {
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm text-slate-600">kanál</span>
+            <span className="text-sm text-slate-600">
+              {t.serialDialogChannelLabel}
+            </span>
             <select
               className="px-3 py-2 rounded-md border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-blue-300"
               value={measurementChannel}
@@ -107,8 +112,8 @@ export function SerialDialog(props: Props) {
                 setMeasurementChannel(e.target.value as "A" | "B")
               }
             >
-              <option value="A">Závaží nahoře</option>
-              <option value="B">Závaží dole</option>
+              <option value="A">{t.serialDialogChannelTop}</option>
+              <option value="B">{t.serialDialogChannelBottom}</option>
             </select>
           </label>
         </div>
@@ -119,27 +124,27 @@ export function SerialDialog(props: Props) {
             disabled={measurementActive}
             className="px-3 py-2 rounded-md bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white shadow-sm"
           >
-            Start (sbírat 20)
+            {t.serialDialogStart20}
           </button>
           <button
             onClick={stop}
             disabled={!measurementActive}
             className="px-3 py-2 rounded-md bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white shadow-sm"
           >
-            Stop
+            {t.serialDialogStop}
           </button>
           <button
             onClick={handleSave}
             disabled={measurementSamples.length < 5 || !inputValueA}
             className="ml-auto px-3 py-2 rounded-md bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white shadow-sm"
           >
-            Pokračovat {/* (průměr {measurementSamples.length}) */}
+            {t.serialDialogContinue} {/* (průměr {measurementSamples.length}) */}
           </button>
         </div>
         <div className="text-sm text-slate-700 mb-2 flex items-center gap-2">
-          <span>Naposledy načtené hodnoty (max 20):</span>
+          <span>{t.serialDialogLastValues}</span>
           <span className="ml-auto text-slate-600">
-            Průměrná perioda:{" "}
+            {t.serialDialogAveragePeriod}{" "}
             <b>
               {" "}
               {measurementSamples.length > 0
@@ -157,10 +162,10 @@ export function SerialDialog(props: Props) {
             <thead className="bg-slate-50 sticky top-0">
               <tr>
                 <th className="text-left px-3 py-2 font-medium text-slate-700">
-                  #
+                  {t.serialDialogIndexHeader}
                 </th>
                 <th className="text-left px-3 py-2 font-medium text-slate-700">
-                  Perioda [ms]
+                  {t.serialDialogPeriodHeader}
                 </th>
               </tr>
             </thead>

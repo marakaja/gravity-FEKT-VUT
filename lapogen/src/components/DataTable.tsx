@@ -1,3 +1,5 @@
+import { useLanguage } from "../context/LanguageContext";
+
 export type Column<T> = {
   key: string;
   label: string;
@@ -15,8 +17,10 @@ export function DataTable<T>({
   columns,
   data,
   onDelete,
-  emptyMessage = "Žádná data",
+  emptyMessage,
 }: DataTableProps<T>) {
+  const { t } = useLanguage();
+  const resolvedEmptyMessage = emptyMessage ?? t.dataTableEmpty;
   return (
     <div className="max-h-64 overflow-auto rounded-md border border-slate-200">
       <table className="min-w-full text-sm text-slate-900">
@@ -31,7 +35,7 @@ export function DataTable<T>({
               </th>
             ))}
             <th className="text-left px-3 py-2 font-medium text-slate-700 w-20">
-              Akce
+              {t.dataTableActions}
             </th>
           </tr>
         </thead>
@@ -42,7 +46,7 @@ export function DataTable<T>({
                 className="px-3 py-3 text-slate-700"
                 colSpan={columns.length + 1}
               >
-                {emptyMessage}
+                {resolvedEmptyMessage}
               </td>
             </tr>
           ) : (
@@ -58,7 +62,7 @@ export function DataTable<T>({
                     onClick={() => onDelete(idx)}
                     className="px-2 py-1 rounded bg-red-100 hover:bg-red-200 text-red-700 text-xs"
                   >
-                    Smazat
+                    {t.dataTableDelete}
                   </button>
                 </td>
               </tr>

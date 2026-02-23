@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { DataTable, type Column } from "../components/DataTable";
 import { XYChart } from "../components/XYChart";
+import { useLanguage } from "../context/LanguageContext";
 import { useWebSerialContext } from "../context/useWebSerialContext";
 
 export type LuxAmperData = {
@@ -20,6 +21,7 @@ export const LuxAmper: FC<LuxAmperProps> = ({
   isConnected,
 }) => {
   const { setParameters, parsedData, measureAll } = useWebSerialContext();
+  const { t } = useLanguage();
   const [amplitudeInput, setAmplitudeInput] = useState("");
   const pendingMeasurementRef = useRef<{
     amplitude: number;
@@ -123,16 +125,17 @@ export const LuxAmper: FC<LuxAmperProps> = ({
     const amplitude = parseFloat(amplitudeInput);
 
     if (isNaN(amplitude) || amplitude < 0 || amplitude > 30000) {
-      alert("Zadejte platnou amplitudu v rozsahu 0-30000 uA");
+      alert(t.luxAlertInvalidAmplitude);
       return;
     }
 
     // Check angle before opening dialog - arm must be at 0° with ±5° tolerance
     if (parsedData.angle === undefined || Math.abs(parsedData.angle) > 5) {
       alert(
-        `Rameno musí být v nulovém úhlu (±5°). Aktuální úhel: ${
+        t.luxAlertAngleNotZero.replace(
+          "{angle}",
           parsedData.angle?.toFixed(1) ?? "N/A"
-        }°`
+        )
       );
       return;
     }
@@ -173,7 +176,7 @@ export const LuxAmper: FC<LuxAmperProps> = ({
           );
           setAmplitudeInput("");
         } else {
-          alert("Nelze získat hodnotu peak ze zařízení. Zkuste to znovu.");
+          alert(t.luxAlertPeakMissing);
         }
         pendingMeasurementRef.current = null;
         measurementTimeoutRef.current = null;
@@ -189,19 +192,19 @@ export const LuxAmper: FC<LuxAmperProps> = ({
   const columns: Column<LuxAmperData>[] = [
     {
       key: "amplitude",
-      label: "Amplituda [uA]",
+      label: t.luxColumnAmplitude,
       render: (item) => item.amplitude.toFixed(0),
     },
     {
       key: "voltage",
-      label: "Napětí [mV]",
+      label: t.luxColumnVoltage,
       render: (item) => item.voltage.toFixed(3),
     },
   ];
 
   const chartSeries = [
     {
-      label: "Lux-Amper",
+      label: t.luxChartTitle,
       data: data.map((d) => ({ x: d.amplitude, y: d.voltage })),
       color: "#10b981",
     },
@@ -212,17 +215,16 @@ export const LuxAmper: FC<LuxAmperProps> = ({
       <section className="card p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-slate-900 font-medium">
-            Lux-Amper charakteristika
+            {t.luxTitle}
           </h3>
         </div>
         <p className="text-slate-700 text-sm mb-4">
-          Měření závislosti luxů na proudu. Frekvence: 1000 Hz, offset: 50%
-          amplitudy.
+          {t.luxDescription}
         </p>
         <div className="flex gap-3 items-end">
           <div className="flex-1">
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Amplituda [uA]
+              {t.luxAmplitudeLabel}
             </label>
             <input
               type="number"
@@ -238,7 +240,7 @@ export const LuxAmper: FC<LuxAmperProps> = ({
                 }
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="0-30000"
+              placeholder={t.luxAmplitudePlaceholder}
             />
           </div>
           <button
@@ -246,16 +248,16 @@ export const LuxAmper: FC<LuxAmperProps> = ({
             disabled={!isConnected || !amplitudeInput}
             className="px-4 py-2 rounded-md bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white"
           >
-            Přidat bod
+            {t.luxAddPoint}
           </button>
         </div>
       </section>
 
       <section className="card p-4">
         <XYChart
-          title="Lux-Amper charakteristika"
-          xAxisLabel="Amplituda [uA]"
-          yAxisLabel="Napětí [mV]"
+          title={t.luxChartTitle}
+          xAxisLabel={t.luxXAxisLabel}
+          yAxisLabel={t.luxYAxisLabel}
           series={chartSeries}
           xMin={0}
           xMax={30000}
@@ -265,12 +267,12 @@ export const LuxAmper: FC<LuxAmperProps> = ({
       </section>
 
       <section className="card p-4">
-        <h3 className="text-slate-900 font-medium mb-3">Tabulka měření</h3>
+        <h3 className="text-slate-900 font-medium mb-3">{t.luxTableTitle}</h3>
         <DataTable
           columns={columns}
           data={data}
           onDelete={handleDelete}
-          emptyMessage="Žádná měření"
+          emptyMessage={t.luxEmptyMeasurements}
         />
       </section>
     </main>
