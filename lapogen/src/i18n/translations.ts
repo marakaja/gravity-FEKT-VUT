@@ -109,8 +109,9 @@ export const translations = {
       "Rameno musí být v nulovém úhlu (±5°). Aktuální úhel: {angle}°",
     frequencyDuplicatePoint:
       "Bod s amplitudou {amplitude} uA a frekvencí {frequency} Hz již existuje.",
+    frequencyMeasurementFailed: "Měření selhalo nebo vypršel časový limit.",
     frequencyXAxisLabel: "Frekvence [Hz]",
-    frequencyYAxisLabel: "Napětí [V]",
+    frequencyYAxisLabel: "Napětí [mV]",
 
     // Lux-Amper
     luxTitle: "Lux-Amper charakteristika",
@@ -149,10 +150,10 @@ export const translations = {
     exportPageVaTableVoltage: "Napětí [mV]",
     exportPageAngleTableAmplitude: "Amplituda [uA]",
     exportPageAngleTableAngle: "Úhel [°]",
-    exportPageAngleTableVoltage: "Napětí [V]",
+    exportPageAngleTableVoltage: "Napětí [mV]",
     exportPageFrequencyTableAmplitude: "Amplituda [uA]",
     exportPageFrequencyTableFrequency: "Frekvence [Hz]",
-    exportPageFrequencyTableVoltage: "Napětí [V]",
+    exportPageFrequencyTableVoltage: "Napětí [mV]",
     exportPageLuxTableAmplitude: "Amplituda [uA]",
     exportPageLuxTableVoltage: "Napětí [mV]",
     exportPageNoMeasurements: "Žádná měření",
@@ -270,8 +271,9 @@ export const translations = {
       "Arm must be at zero angle (±5°). Current angle: {angle}°",
     frequencyDuplicatePoint:
       "Point with amplitude {amplitude} uA and frequency {frequency} Hz already exists.",
+    frequencyMeasurementFailed: "Measurement failed or timed out.",
     frequencyXAxisLabel: "Frequency [Hz]",
-    frequencyYAxisLabel: "Voltage [V]",
+    frequencyYAxisLabel: "Voltage [mV]",
 
     // Lux-Amper
     luxTitle: "Lux-Amper characteristic",
@@ -309,10 +311,10 @@ export const translations = {
     exportPageVaTableVoltage: "Voltage [mV]",
     exportPageAngleTableAmplitude: "Amplitude [uA]",
     exportPageAngleTableAngle: "Angle [°]",
-    exportPageAngleTableVoltage: "Voltage [V]",
+    exportPageAngleTableVoltage: "Voltage [mV]",
     exportPageFrequencyTableAmplitude: "Amplitude [uA]",
     exportPageFrequencyTableFrequency: "Frequency [Hz]",
-    exportPageFrequencyTableVoltage: "Voltage [V]",
+    exportPageFrequencyTableVoltage: "Voltage [mV]",
     exportPageLuxTableAmplitude: "Amplitude [uA]",
     exportPageLuxTableVoltage: "Voltage [mV]",
     exportPageNoMeasurements: "No measurements",

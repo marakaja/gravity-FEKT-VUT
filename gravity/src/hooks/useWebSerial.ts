@@ -7,6 +7,7 @@ export function useWebSerial() {
     const [baudRate, setBaudRate] = useState(115200);
     const [errorMessage, setErrorMessage] = useState("");
     const [lastLine, setLastLine] = useState("");
+    const [lastLineSeq, setLastLineSeq] = useState(0);
     const [lines, setLines] = useState<string[]>([]);
 
     const portRef = useRef<SerialPort | null>(null);
@@ -53,6 +54,7 @@ export function useWebSerial() {
                         if (done) break;
                         if (typeof value === "string") {
                             setLastLine(value);
+                            setLastLineSeq((prev) => prev + 1);
                             setLines((prev) => [value, ...prev].slice(0, 200));
                         }
                     }
@@ -135,6 +137,7 @@ export function useWebSerial() {
         } finally {
             // Clear receive buffers in UI state
             setLastLine("");
+            setLastLineSeq(0);
             setLines([]);
         }
     }, []);
@@ -146,6 +149,7 @@ export function useWebSerial() {
         setBaudRate,
         errorMessage,
         lastLine,
+        lastLineSeq,
         lines,
         connect,
         disconnect,

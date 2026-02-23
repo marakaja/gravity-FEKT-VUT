@@ -27,7 +27,7 @@ export function SerialDialog(props: Props) {
 
   const { t } = useLanguage();
 
-  const { lastLine } = useWebSerialContext();
+  const { lastLine, lastLineSeq } = useWebSerialContext();
   const [measurementActive, setMeasurementActive] = useState<boolean>(false);
   const [measurementSamples, setMeasurementSamples] = useState<number[]>([]);
   const [skippedFirstSample, setSkippedFirstSample] = useState<boolean>(false);
@@ -61,7 +61,8 @@ export function SerialDialog(props: Props) {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastLine, measurementActive]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastLine, lastLineSeq, measurementActive]);
 
   function start() {
     setMeasurementSamples([]);

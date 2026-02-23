@@ -1,6 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import { LineBreakTransformer } from "../lib/LineBreakTransformer";
 
+type MeasurementResolve = (data: ParsedData) => void;
+
 export type ParsedData = {
   voltage: number; // voltled from measure_all
   angle: number; // angle from measure_all
@@ -32,6 +34,7 @@ export function useWebSerial() {
   const readableClosedRef = useRef<Promise<void> | null>(null);
   const writableClosedRef = useRef<Promise<void> | null>(null);
   const keepReadingRef = useRef<boolean>(false);
+  const measureResolveRef = useRef<MeasurementResolve | null>(null);
 
   const connect = useCallback(async () => {
     setErrorMessage("");
@@ -99,7 +102,15 @@ export function useWebSerial() {
                   });
 
                   if (data.voltage !== undefined && data.angle !== undefined) {
-                    setParsedData((prev) => ({ ...prev, ...data }));
+                    setParsedData((prev) => {
+                      const updated = { ...prev, ...data };
+                      // Resolve pending measureAllAndWait promise
+                      if (measureResolveRef.current) {
+                        measureResolveRef.current(updated);
+                        measureResolveRef.current = null;
+                      }
+                      return updated;
+                    });
                   }
                 }
               } catch {
@@ -227,6 +238,30 @@ export function useWebSerial() {
     }
   }, []);
 
+  // Send measure_all and wait for the parsed response from the device
+  const measureAllAndWait = useCallback(
+    async (timeoutMs = 3000): Promise<ParsedData | null> => {
+      try {
+        if (!writerRef.current) return null;
+        const promise = new Promise<ParsedData>((resolve, reject) => {
+          measureResolveRef.current = resolve;
+          setTimeout(() => {
+            if (measureResolveRef.current === resolve) {
+              measureResolveRef.current = null;
+              reject(new Error("Measurement timeout"));
+            }
+          }, timeoutMs);
+        });
+        await writerRef.current.write("measure_all\n");
+        return await promise;
+      } catch (err) {
+        setErrorMessage((err as Error).message);
+        return null;
+      }
+    },
+    []
+  );
+
   return {
     isSupported,
     isOpen,
@@ -243,5 +278,6 @@ export function useWebSerial() {
     setParameters,
     calibrateZeroAngle,
     measureAll,
+    measureAllAndWait,
   };
 }

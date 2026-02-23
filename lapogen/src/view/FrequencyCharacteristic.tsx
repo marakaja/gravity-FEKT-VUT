@@ -22,7 +22,7 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
   onDataChange,
   isConnected,
 }) => {
-  const { setParameters, parsedData, measureAll } = useWebSerialContext();
+  const { setParameters, parsedData, measureAll, measureAllAndWait } = useWebSerialContext();
   const { t } = useLanguage();
   const [amplitudeInput, setAmplitudeInput] = useState("");
   const [frequencyInput, setFrequencyInput] = useState("");
@@ -87,11 +87,18 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
       return;
     }
 
+    // 1. Set parameters on the device and wait for them to be applied
     await setParameters(amplitude, frequency, amplitude / 2);
-    await measureAll();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Generate unique ID
+    // 2. Perform measurement and wait for the actual response from the device
+    const measurement = await measureAllAndWait();
+    if (!measurement) {
+      alert(t.frequencyMeasurementFailed ?? "Measurement failed or timed out.");
+      return;
+    }
+
+    // 3. Add the point using the measured data
     const id =
       typeof crypto !== "undefined" && crypto.randomUUID
         ? crypto.randomUUID()
@@ -99,7 +106,7 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
     const newPoint: FrequencyData = {
       id,
       frequency,
-      voltage: parsedData.peek,
+      voltage: measurement.peek,
       amplitude,
     };
 
@@ -190,7 +197,7 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
             </label>
             <input
               type="number"
-              min="1"
+              min="100"
               max="200000"
               step="0.1"
               value={frequencyInput}

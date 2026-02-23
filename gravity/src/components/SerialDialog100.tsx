@@ -34,9 +34,11 @@ export function SerialDialog100(props: Props) {
 
   const { t } = useLanguage();
 
-  const { lastLine } = useWebSerialContext();
+  type Sample = { value: number; isOutlier: boolean };
+
+  const { lastLine, lastLineSeq } = useWebSerialContext();
   const [measurementActive, setMeasurementActive] = useState<boolean>(false);
-  const [measurementSamples, setMeasurementSamples] = useState<number[]>([]);
+  const [measurementSamples, setMeasurementSamples] = useState<Sample[]>([]);
   const [skippedFirstSample, setSkippedFirstSample] = useState<boolean>(false);
 
   // Reset local dialog state when opened/closed
@@ -59,7 +61,15 @@ export function SerialDialog100(props: Props) {
         return;
       }
       setMeasurementSamples((prev) => {
-        const next = [...prev, val];
+        const validSamples = prev.filter((s) => !s.isOutlier);
+        const avg =
+          validSamples.length >= 3
+            ? validSamples.reduce((acc, s) => acc + s.value, 0) /
+              validSamples.length
+            : 0;
+        const isOutlier =
+          validSamples.length >= 3 && Math.abs(val - avg) > 0.1 * avg;
+        const next = [...prev, { value: val, isOutlier }];
         if (next.length >= 100) {
           setMeasurementActive(false);
           return next.slice(-100);
@@ -68,7 +78,7 @@ export function SerialDialog100(props: Props) {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastLine, measurementActive]);
+  }, [lastLine, lastLineSeq, measurementActive]);
 
   function start() {
     setMeasurementSamples([]);
@@ -81,44 +91,46 @@ export function SerialDialog100(props: Props) {
   }
 
   function handleSave() {
-    if (measurementSamples.length < 90) return;
-    const lastNinety = measurementSamples.slice(-90);
+    const validSamples = measurementSamples.filter((s) => !s.isOutlier);
+    if (validSamples.length < 90) return;
+    const lastNinety = validSamples.slice(-90);
     const sums: number[] = [];
-    for (let i = 0; i < 90; i += 10) {
-      const block = lastNinety.slice(i, i + 10);
-      const s = block.reduce((acc, v) => acc + v, 0);
-      sums.push(s);
+    let runningSum = 0;
+    for (let i = 0; i < 90; i++) {
+      runningSum += lastNinety[i].value;
+      if ((i + 1) % 10 === 0) {
+        sums.push(runningSum);
+      }
     }
     onSave(sums);
   }
 
-  // Výpočet varování pro odlehlé kmity - vždy aktuální při změně vzorků
+  // Počet vyřazených (outlier) vzorků
+  const outlierCount = useMemo(
+    () => measurementSamples.filter((s) => s.isOutlier).length,
+    [measurementSamples]
+  );
+
+  // Informace o vyřazených vzorcích
   const outlierWarning = useMemo(() => {
-    const lastNinety = measurementSamples.slice(-90);
-    if (lastNinety.length === 90) {
-      const avg = lastNinety.reduce((acc, v) => acc + v, 0) / 90;
-      const outliers = lastNinety
-        .map((v, i) => ({ v, i }))
-        .filter(({ v }) => Math.abs(v - avg) > 0.1 * avg);
-      if (outliers.length > 0) {
-        const warningText = t.serialDialog100OutlierWarning.replace(
-          "{avg}",
-          avg.toFixed(2)
-        );
-        return (
-          <div className="mb-4 p-3 rounded-md bg-rose-50 text-rose-800 border border-rose-200">
-            {warningText}
-            <br />
-            {/* Indexy: {outliers.map(({ i }) => i + 1).join(", ")} */}
-          </div>
-        );
-      }
-    }
-    return null;
-  }, [measurementSamples]);
+    if (outlierCount === 0) return null;
+    const validSamples = measurementSamples.filter((s) => !s.isOutlier);
+    const avg =
+      validSamples.length > 0
+        ? validSamples.reduce((acc, s) => acc + s.value, 0) / validSamples.length
+        : 0;
+    return (
+      <div className="mb-4 p-3 rounded-md bg-amber-50 text-amber-800 border border-amber-200">
+        {t.serialDialog100OutlierWarning.replace("{avg}", avg.toFixed(2))}
+        {" "}
+        <strong>{outlierCount}</strong> vyřazeno (odchylka &gt; 10 %).
+      </div>
+    );
+  }, [measurementSamples, outlierCount]);
 
   const count = measurementSamples.length;
-  const canSave = count >= 90;
+  const validCount = count - outlierCount;
+  const canSave = validCount >= 90;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} modal size="own">
@@ -150,7 +162,7 @@ export function SerialDialog100(props: Props) {
             {t.serialDialog100Stop}
           </button>
           <div className="text-black text-xl font-bold ml-auto">
-            {count} / 100
+            {validCount}{outlierCount > 0 && <span className="text-rose-500 text-base"> (+{outlierCount} vyřazených)</span>} / 100
           </div>
           <button
             onClick={handleSave}
@@ -176,18 +188,14 @@ export function SerialDialog100(props: Props) {
             <tbody className="divide-y divide-slate-200">
               {(() => {
                 const slice = measurementSamples.slice(-100);
-                const highlightStart = Math.max(0, slice.length - 90);
-                return slice.reverse().map((v, i) => {
-                  const isFaded = i < highlightStart;
+                return [...slice].reverse().map((s, i) => {
+                  const rowClass = s.isOutlier
+                    ? "bg-rose-50 text-rose-500 line-through"
+                    : "odd:bg-white even:bg-slate-50";
                   return (
-                    <tr
-                      key={i}
-                      className={`odd:bg-white even:bg-slate-50 ${
-                        isFaded ? "text-slate-400" : ""
-                      }`}
-                    >
+                    <tr key={i} className={rowClass}>
                       <td className="px-3 py-2">{i + 1}</td>
-                      <td className="px-3 py-2">{v}</td>
+                      <td className="px-3 py-2">{s.value}{s.isOutlier ? " ✕" : ""}</td>
                     </tr>
                   );
                 });
@@ -197,40 +205,23 @@ export function SerialDialog100(props: Props) {
         </div>
         {(() => {
           const slice = measurementSamples.slice(-100);
-          const highlightStart = Math.max(0, slice.length - 90);
 
-          // Rozdělení bodů na faded a aktivní
-          const fadedPoints = slice.slice(0, highlightStart).map((v, i) => ({
-            x: i + 1,
-            y: v,
-          }));
-          const activePoints = slice.slice(highlightStart).map((v, i) => ({
-            x: highlightStart + i + 1,
-            y: v,
-          }));
+          // Rozdělení bodů na platné a outlier
+          const validPoints = slice
+            .map((s, i) => ({ x: i + 1, y: s.value, outlier: s.isOutlier }))
+            .filter((p) => !p.outlier);
+          const outlierPoints = slice
+            .map((s, i) => ({ x: i + 1, y: s.value, outlier: s.isOutlier }))
+            .filter((p) => p.outlier);
 
-          // Plugin pro šedé pozadí pod faded body
-          const fadedBgPlugin = {
-            id: "fadedBgPlugin",
-            beforeDatasetsDraw: (chart: ChartJS) => {
-              const { ctx, chartArea } = chart;
-              if (!chartArea) return;
-              if (highlightStart > 0) {
-                const xAxis = chart.scales.x;
-                const xStart = xAxis.getPixelForValue(1);
-                const xEnd = xAxis.getPixelForValue(highlightStart);
-                ctx.save();
-                ctx.fillStyle = "rgba(148,163,184,0.15)"; // slate-400, light
-                ctx.fillRect(
-                  xStart,
-                  chartArea.top,
-                  xEnd - xStart,
-                  chartArea.bottom - chartArea.top
-                );
-                ctx.restore();
-              }
-            },
-          };
+          // Dynamické limity Y-osy: ±15 % od průměru platných hodnot
+          const validValues = validPoints.map((p) => p.y);
+          const avg =
+            validValues.length > 0
+              ? validValues.reduce((a, b) => a + b, 0) / validValues.length
+              : 2000;
+          const yMin = avg * 0.85;
+          const yMax = avg * 1.15;
 
           return (
             <div className="mt-4 bg-white rounded-xl border border-slate-200 p-4">
@@ -238,33 +229,35 @@ export function SerialDialog100(props: Props) {
                 <Line
                   data={{
                     datasets: [
-                      ...(fadedPoints.length > 0
+                      ...(validPoints.length > 0
                         ? [
                             {
-                              data: fadedPoints,
+                              label: "Platné",
+                              data: validPoints,
                               showLine: true,
                               pointRadius: 2,
-                              pointBackgroundColor: "rgba(148,163,184,0.3)", // slate-400 faded
-                              pointBorderColor: "rgba(148,163,184,0.3)",
-                              borderColor: "rgba(148,163,184,0.7)", // faded line
-                              backgroundColor: "rgba(148,163,184,0.1)",
-                              spanGaps: true,
-                              order: 1,
-                            },
-                          ]
-                        : []),
-                      ...(activePoints.length > 0
-                        ? [
-                            {
-                              data: activePoints,
-                              showLine: true,
-                              pointRadius: 2,
-                              pointBackgroundColor: "#16a34a", // green-600
+                              pointBackgroundColor: "#16a34a",
                               pointBorderColor: "#16a34a",
-                              borderColor: "#16a34a", // green line
+                              borderColor: "#16a34a",
                               backgroundColor: "rgba(22,163,74,0.1)",
                               spanGaps: true,
                               order: 2,
+                            },
+                          ]
+                        : []),
+                      ...(outlierPoints.length > 0
+                        ? [
+                            {
+                              label: "Vyřazené (>10 %)",
+                              data: outlierPoints,
+                              showLine: false,
+                              pointRadius: 5,
+                              pointStyle: "crossRot" as const,
+                              pointBackgroundColor: "#e11d48",
+                              pointBorderColor: "#e11d48",
+                              borderColor: "transparent",
+                              backgroundColor: "rgba(225,29,72,0.1)",
+                              order: 1,
                             },
                           ]
                         : []),
@@ -287,6 +280,8 @@ export function SerialDialog100(props: Props) {
                       },
                       y: {
                         type: "linear",
+                        min: yMin,
+                        max: yMax,
                         title: {
                           display: true,
                           text: "Perioda [ms]",
@@ -297,11 +292,13 @@ export function SerialDialog100(props: Props) {
                       },
                     },
                     plugins: {
-                      legend: { display: false },
+                      legend: {
+                        display: outlierPoints.length > 0,
+                        labels: { usePointStyle: true },
+                      },
                       title: { display: false },
                     },
                   }}
-                  plugins={[fadedBgPlugin]}
                 />
               </div>
             </div>
