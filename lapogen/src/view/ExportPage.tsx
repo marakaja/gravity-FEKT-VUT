@@ -41,7 +41,7 @@ export const ExportPage: React.FC = () => {
     console.log("dataParam", urlParams);
 
     if (!dataParam) {
-      setError(t.exportPageErrorMissingData);
+      setError(t.exportPageMissingData);
       setIsLoading(false);
       return;
     }
@@ -54,7 +54,7 @@ export const ExportPage: React.FC = () => {
       if (decompressed) {
         setExportData(decompressed);
       } else {
-        setError(t.exportPageErrorDecompress);
+        setError(t.exportPageDecompressError);
       }
     } catch (primaryErr) {
       try {
@@ -65,11 +65,11 @@ export const ExportPage: React.FC = () => {
         if (decompressed) {
           setExportData(decompressed);
         } else {
-          setError(t.exportPageErrorDecompress);
+          setError(t.exportPageDecompressError);
         }
       } catch (legacyErr) {
         console.error("Error parsing export data:", primaryErr, legacyErr);
-        setError(t.exportPageErrorDecode);
+        setError(t.exportPageDecodeError);
       } finally {
         setIsLoading(false);
       }
@@ -181,7 +181,7 @@ export const ExportPage: React.FC = () => {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">{t.exportPageLoadingData}</p>
+          <p className="text-slate-600">{t.exportPageLoading}</p>
         </div>
       </div>
     );
@@ -196,13 +196,13 @@ export const ExportPage: React.FC = () => {
             {t.exportPageErrorTitle}
           </h1>
           <p className="text-slate-600 mb-4">
-            {error || t.exportPageDataNotFound}
+            {error || t.exportPageNoDataFound}
           </p>
           <button
             onClick={() => window.history.back()}
             className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-md"
           >
-            {t.exportPageBackButton}
+            {t.exportPageBack}
           </button>
         </div>
       </div>
@@ -244,13 +244,13 @@ export const ExportPage: React.FC = () => {
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                   />
                 </svg>
-                {t.exportPagePrintButton}
+                {t.exportPagePrint}
               </button>
               <button
                 onClick={() => (window.location.href = "/")}
                 className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-md"
               >
-                {t.exportPageBackButton}
+                {t.exportPageBack}
               </button>
             </div>
           </div>
@@ -292,7 +292,7 @@ export const ExportPage: React.FC = () => {
           {/* VA Characteristic */}
           <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">
-              {t.exportPageVATitle}
+              {t.exportPageVaTitle}
             </h2>
 
             {exportData.vaCharacteristic.length > 0 ? (
@@ -301,10 +301,10 @@ export const ExportPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageVACurrent}
+                        {t.exportPageVaTableCurrent}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageVAVoltage}
+                        {t.exportPageVaTableVoltage}
                       </th>
                     </tr>
                   </thead>
@@ -341,13 +341,13 @@ export const ExportPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageAngleAmplitude}
+                        {t.exportPageAngleTableAmplitude}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageAngleAngle}
+                        {t.exportPageAngleTableAngle}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageAngleVoltage}
+                        {t.exportPageAngleTableVoltage}
                       </th>
                     </tr>
                   </thead>
@@ -381,13 +381,13 @@ export const ExportPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageFrequencyAmplitude}
+                        {t.exportPageFrequencyTableAmplitude}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageFrequencyFrequency}
+                        {t.exportPageFrequencyTableFrequency}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageFrequencyVoltage}
+                        {t.exportPageFrequencyTableVoltage}
                       </th>
                     </tr>
                   </thead>
@@ -427,10 +427,10 @@ export const ExportPage: React.FC = () => {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageLuxAmplitude}
+                        {t.exportPageLuxTableAmplitude}
                       </th>
                       <th className="text-left py-2 px-3 text-slate-600">
-                        {t.exportPageLuxVoltage}
+                        {t.exportPageLuxTableVoltage}
                       </th>
                     </tr>
                   </thead>

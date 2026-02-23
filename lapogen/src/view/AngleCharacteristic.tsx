@@ -291,7 +291,7 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
               }
               return 0;
             })()}
-            min={-{t.angleDetectorLabel}
+            min={-180}
             max={180}
             label="Úhel detektoru"
             unit="°"

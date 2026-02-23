@@ -55,18 +55,18 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
     const frequency = parseFloat(frequencyInput);
 
     if (isNaN(amplitude) || amplitude < 0 || amplitude > 30000) {
-      alert(t.frequencyAlertInvalidAmplitude);
+      alert(t.frequencyInvalidAmplitude);
       return;
     }
     if (isNaN(frequency) || frequency < 1 || frequency > 200000) {
-      alert(t.frequencyAlertInvalidFrequency);
+      alert(t.frequencyInvalidFrequency);
       return;
     }
 
     // Check angle before opening dialog - arm must be at 0° with ±5° tolerance
     if (parsedData.angle === undefined || Math.abs(parsedData.angle) > 5) {
       alert(
-        t.frequencyAlertAngleNotZero.replace(
+        t.frequencyAngleOutOfRange.replace(
           "{angle}",
           parsedData.angle?.toFixed(1) ?? "N/A"
         )
@@ -80,7 +80,7 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
     );
     if (exists) {
       alert(
-        t.frequencyAlertDuplicatePoint
+        t.frequencyDuplicatePoint
           .replace("{amplitude}", amplitude.toString())
           .replace("{frequency}", frequency.toString())
       );
@@ -114,17 +114,17 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
   const columns: Column<FrequencyData>[] = [
     {
       key: "amplitude",
-      label: t.frequencyColumnAmplitude,
+      label: t.frequencyAmplitudeLabel,
       render: (item) => item.amplitude.toFixed(0),
     },
     {
       key: "frequency",
-      label: t.frequencyColumnFrequency,
+      label: t.frequencyLabel,
       render: (item) => item.frequency.toFixed(1),
     },
     {
       key: "voltage",
-      label: t.frequencyColumnVoltage,
+      label: t.frequencyYAxisLabel,
       render: (item) => item.voltage.toFixed(3),
     },
   ];
@@ -181,12 +181,12 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
                 }
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={t.frequencyAmplitudePlaceholder}
+              placeholder={t.frequencyAmplitudeLabel}
             />
           </div>
           <div className="flex-1">
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              {t.frequencyFrequencyLabel}
+              {t.frequencyLabel}
             </label>
             <input
               type="number"
@@ -202,7 +202,7 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
                 }
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={t.frequencyFrequencyPlaceholder}
+              placeholder={t.frequencyLabel}
             />
           </div>
           <button
@@ -219,10 +219,10 @@ export const FrequencyCharacteristic: FC<FrequencyCharacteristicProps> = ({
         {" "}
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-slate-900 font-medium">
-            {t.frequencyChartTitle}
+            {t.frequencyTitle}
           </h3>
           <label className="flex items-center gap-2 cursor-pointer">
-            <span className="text-sm text-slate-700">{t.frequencyLogarithmicY}</span>
+            <span className="text-sm text-slate-700">{t.frequencyLogY}</span>
             <input
               type="checkbox"
               checked={logarithmicY}

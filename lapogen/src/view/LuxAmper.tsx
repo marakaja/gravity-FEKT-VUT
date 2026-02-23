@@ -125,14 +125,14 @@ export const LuxAmper: FC<LuxAmperProps> = ({
     const amplitude = parseFloat(amplitudeInput);
 
     if (isNaN(amplitude) || amplitude < 0 || amplitude > 30000) {
-      alert(t.luxAlertInvalidAmplitude);
+      alert(t.luxInvalidAmplitude);
       return;
     }
 
     // Check angle before opening dialog - arm must be at 0° with ±5° tolerance
     if (parsedData.angle === undefined || Math.abs(parsedData.angle) > 5) {
       alert(
-        t.luxAlertAngleNotZero.replace(
+        t.luxAngleOutOfRange.replace(
           "{angle}",
           parsedData.angle?.toFixed(1) ?? "N/A"
         )
@@ -176,7 +176,7 @@ export const LuxAmper: FC<LuxAmperProps> = ({
           );
           setAmplitudeInput("");
         } else {
-          alert(t.luxAlertPeakMissing);
+          alert(t.luxPeakMissing);
         }
         pendingMeasurementRef.current = null;
         measurementTimeoutRef.current = null;
@@ -192,12 +192,12 @@ export const LuxAmper: FC<LuxAmperProps> = ({
   const columns: Column<LuxAmperData>[] = [
     {
       key: "amplitude",
-      label: t.luxColumnAmplitude,
+      label: t.luxAmplitudeLabel,
       render: (item) => item.amplitude.toFixed(0),
     },
     {
       key: "voltage",
-      label: t.luxColumnVoltage,
+      label: t.luxYAxisLabel,
       render: (item) => item.voltage.toFixed(3),
     },
   ];
@@ -240,7 +240,7 @@ export const LuxAmper: FC<LuxAmperProps> = ({
                 }
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={t.luxAmplitudePlaceholder}
+              placeholder={t.luxAmplitudeLabel}
             />
           </div>
           <button
