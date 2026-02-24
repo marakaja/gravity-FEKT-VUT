@@ -21,7 +21,9 @@ export function useWebSerial() {
         setErrorMessage("");
         try {
             if (!isSupported) throw new Error("Web Serial není podporováno.");
-            const port = await navigator.serial.requestPort();
+            const port = await navigator.serial.requestPort({
+                filters: [{ usbVendorId: 0x0403, usbProductId: 0x6010 }], // USB JTAG/serial debug unit
+            });
             await port.open({ baudRate });
 
             const textEncoder = new TextEncoderStream();

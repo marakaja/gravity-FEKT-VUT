@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import QRCode from "qrcode";
 import type { Pendulum1Data, Pendulum2Data } from "../App";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { useLanguage } from "../context/LanguageContext";
 import { decodeBase64UrlToJson } from "../lib/localStorage";
 
@@ -143,6 +144,7 @@ export const ExportPage: React.FC = () => {
               </p>
             </div>
             <div className="flex gap-3">
+              <LanguageSwitcher />
               <button
                 onClick={() => window.print()}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center gap-2"
@@ -313,17 +315,8 @@ export const ExportPage: React.FC = () => {
                         (_, index) => {
                           const kmit = index * 10;
 
-                          // Calculate cumulative sums
-                          let t1 = 0;
-                          let t2 = 0;
-
-                          if (index > 0) {
-                            // Sum all values from 0 to index-1
-                            for (let i = 0; i < index; i++) {
-                              t1 += exportData.pendulum2.measureA[i] ?? 0;
-                              t2 += exportData.pendulum2.measureB[i] ?? 0;
-                            }
-                          }
+                          const t1 = index > 0 ? (exportData.pendulum2.measureA[index - 1] ?? 0) : 0;
+                          const t2 = index > 0 ? (exportData.pendulum2.measureB[index - 1] ?? 0) : 0;
 
                           return (
                             <tr

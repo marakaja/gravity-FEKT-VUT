@@ -246,6 +246,7 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder={t.angleInputPlaceholder}
             />
+            <p className="text-xs text-slate-500 mt-1">{t.angleInputRangeHint}</p>
             {/* {isConnected &&
               parsedData.amp !== undefined &&
               parsedData.amp > 0 && (
@@ -293,7 +294,7 @@ export const AngleCharacteristic: FC<AngleCharacteristicProps> = ({
             })()}
             min={-180}
             max={180}
-            label="Úhel detektoru"
+            label={t.angleDetectorLabel}
             unit="°"
           />
           <GaugeChart

@@ -149,6 +149,7 @@ export const VACharacteristic: FC<VACharacteristicProps> = ({
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="1-30000"
             />
+            <p className="text-xs text-slate-500 mt-1">{t.vaCurrentRangeHint}</p>
             {(() => {
               const current = parseFloat(currentInput);
               const isValid = !isNaN(current) && current > 0;

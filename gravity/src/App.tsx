@@ -149,6 +149,7 @@ function App() {
           </div>
         </div>
       </header>
+      <div className="flex-1 overflow-y-auto" style={{ maxHeight: "calc(100vh - 130px)" }}>
       {!isSupported && (
         <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
           {t.notSupportedMessage}
@@ -217,19 +218,7 @@ function App() {
         />
       </div>
 
-      <ExportDialog
-        isOpen={isExportDialogOpen}
-        onClose={() => setIsExportDialogOpen(false)}
-        pendulum1Data={pendulum1Data}
-        pendulum2Data={pendulum2Data}
-      />
-
-      <PdfDialog
-        isOpen={isPdfDialogOpen}
-        onClose={() => setIsPdfDialogOpen(false)}
-      />
-
-      <footer className="mt-16 border-t border-slate-200 bg-slate-50">
+      <footer className="mt-auto border-t border-slate-200 bg-slate-50">
         <div className="container py-6">
           <p className="text-right text-sm text-slate-600">
             {t.createdBy}{" "}
@@ -244,6 +233,19 @@ function App() {
           </p>
         </div>
       </footer>
+      </div>
+
+      <ExportDialog
+        isOpen={isExportDialogOpen}
+        onClose={() => setIsExportDialogOpen(false)}
+        pendulum1Data={pendulum1Data}
+        pendulum2Data={pendulum2Data}
+      />
+
+      <PdfDialog
+        isOpen={isPdfDialogOpen}
+        onClose={() => setIsPdfDialogOpen(false)}
+      />
     </>
   );
 }

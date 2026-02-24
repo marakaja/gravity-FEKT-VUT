@@ -37,6 +37,13 @@ export const translations = {
     serialDialog100Save: "Uložit (součty po 10 z posledních 90)",
     serialDialog100OutlierWarning:
       "❌ Pozor některý z kmitů se liší o více než 10% od průměru ({avg} ms). ❌",
+    serialDialog100OutlierExcluded: "vyřazeno (odchylka > 10 %)",
+    serialDialog100ExcludedCount: "(+{count} vyřazených)",
+    serialDialog100ChartValid: "Platné",
+    serialDialog100ChartOutlier: "Vyřazené (>10 %)",
+    serialDialog100ChartXAxis: "Měření",
+    serialDialog100ChartYAxis: "Perioda [ms]",
+    serialDialog100Close: "Zavřít",
 
     // Pendulum 1
     pendulum1NewMeasurement: "Nové měření",
@@ -156,6 +163,13 @@ export const translations = {
     serialDialog100Save: "Save (sums of 10 from last 90)",
     serialDialog100OutlierWarning:
       "❌ Warning: some oscillations differ by more than 10% from average ({avg} ms). ❌",
+    serialDialog100OutlierExcluded: "excluded (deviation > 10%)",
+    serialDialog100ExcludedCount: "(+{count} excluded)",
+    serialDialog100ChartValid: "Valid",
+    serialDialog100ChartOutlier: "Excluded (>10%)",
+    serialDialog100ChartXAxis: "Measurement",
+    serialDialog100ChartYAxis: "Period [ms]",
+    serialDialog100Close: "Close",
 
     // Pendulum 1
     pendulum1NewMeasurement: "New measurement",

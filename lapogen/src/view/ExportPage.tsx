@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { AppData } from "../App";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { useLanguage } from "../context/LanguageContext";
 import { decodeBase64UrlToJson } from "../lib/localStorage";
 import type { AngleData } from "./AngleCharacteristic";
@@ -227,6 +228,7 @@ export const ExportPage: React.FC = () => {
               </p>
             </div>
             <div className="flex gap-3">
+              <LanguageSwitcher />
               <button
                 onClick={() => window.print()}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center gap-2"
@@ -282,7 +284,7 @@ export const ExportPage: React.FC = () => {
                 />
               </div>
               <p className="text-sm text-slate-600 mt-2">
-                QR kód pro opětovné načtení dat
+                {t.exportPageQrReload}
               </p>
             </div>
           </div>

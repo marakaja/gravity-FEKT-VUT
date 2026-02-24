@@ -40,7 +40,9 @@ export function useWebSerial() {
     setErrorMessage("");
     try {
       if (!isSupported) throw new Error("Web Serial není podporováno.");
-      const port = await navigator.serial.requestPort();
+      const port = await navigator.serial.requestPort({
+        filters: [{ usbVendorId: 0x0483 }], // ST-Link
+      });
       await port.open({ baudRate });
 
       const textEncoder = new TextEncoderStream();
