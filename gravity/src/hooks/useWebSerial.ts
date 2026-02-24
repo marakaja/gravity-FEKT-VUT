@@ -22,7 +22,7 @@ export function useWebSerial() {
         try {
             if (!isSupported) throw new Error("Web Serial není podporováno.");
             const port = await navigator.serial.requestPort({
-                filters: [{ usbVendorId: 0x0403, usbProductId: 0x6010 }], // USB JTAG/serial debug unit
+                filters: [{ usbVendorId: 0x303a}], // ESP32-C3 internal USB JTAG/serial vendor ID
             });
             await port.open({ baudRate });
 
