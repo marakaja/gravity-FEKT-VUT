@@ -34,7 +34,7 @@ export function XYChart({
                     data={{
                         datasets: [
                             {
-                                label: t.xyChartSeriesBottom,
+                                label: t.xyChartSeriesTop,
                                 data: seriesA,
                                 borderColor: "#16a34a", // green-600
                                 backgroundColor: "#16a34a",
@@ -43,7 +43,7 @@ export function XYChart({
                                 parsing: false as const,
                             },
                             {
-                                label: t.xyChartSeriesTop,
+                                label: t.xyChartSeriesBottom,
                                 data: seriesB,
                                 borderColor: "#2563eb", // blue-600
                                 backgroundColor: "#2563eb",
@@ -54,7 +54,7 @@ export function XYChart({
                             ...(fitA && fitA.length
                                 ? [
                                       {
-                                          label: t.xyChartFitBottom.replace("{mse}", mseSuffixA),
+                                          label: t.xyChartFitTop.replace("{mse}", mseSuffixA),
                                           data: fitA,
                                           borderColor: "#16a34a",
                                           backgroundColor: "#16a34a",
@@ -67,7 +67,7 @@ export function XYChart({
                             ...(fitB && fitB.length
                                 ? [
                                       {
-                                          label: t.xyChartFitTop.replace("{mse}", mseSuffixB),
+                                          label: t.xyChartFitBottom.replace("{mse}", mseSuffixB),
                                           data: fitB,
                                           borderColor: "#2563eb",
                                           backgroundColor: "#2563eb",

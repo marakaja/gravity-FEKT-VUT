@@ -123,7 +123,7 @@ export function SerialDialog100(props: Props) {
       <div className="mb-4 p-3 rounded-md bg-amber-50 text-amber-800 border border-amber-200">
         {t.serialDialog100OutlierWarning.replace("{avg}", avg.toFixed(2))}
         {" "}
-        <strong>{outlierCount}</strong> vyřazeno (odchylka &gt; 10 %).
+        <strong>{outlierCount}</strong> {t.serialDialog100OutlierExcluded}
       </div>
     );
   }, [measurementSamples, outlierCount]);
@@ -162,7 +162,7 @@ export function SerialDialog100(props: Props) {
             {t.serialDialog100Stop}
           </button>
           <div className="text-black text-xl font-bold ml-auto">
-            {validCount}{outlierCount > 0 && <span className="text-rose-500 text-base"> (+{outlierCount} vyřazených)</span>} / 100
+            {validCount}{outlierCount > 0 && <span className="text-rose-500 text-base"> {t.serialDialog100ExcludedCount.replace("{count}", String(outlierCount))}</span>} / 100
           </div>
           <button
             onClick={handleSave}
@@ -232,7 +232,7 @@ export function SerialDialog100(props: Props) {
                       ...(validPoints.length > 0
                         ? [
                             {
-                              label: "Platné",
+                              label: t.serialDialog100ChartValid,
                               data: validPoints,
                               showLine: true,
                               pointRadius: 2,
@@ -248,7 +248,7 @@ export function SerialDialog100(props: Props) {
                       ...(outlierPoints.length > 0
                         ? [
                             {
-                              label: "Vyřazené (>10 %)",
+                              label: t.serialDialog100ChartOutlier,
                               data: outlierPoints,
                               showLine: false,
                               pointRadius: 5,
@@ -272,7 +272,7 @@ export function SerialDialog100(props: Props) {
                         type: "linear",
                         title: {
                           display: true,
-                          text: "Měření",
+                          text: t.serialDialog100ChartXAxis,
                           color: "#334155",
                         },
                         grid: { color: "#e2e8f0" },
@@ -284,7 +284,7 @@ export function SerialDialog100(props: Props) {
                         max: yMax,
                         title: {
                           display: true,
-                          text: "Perioda [ms]",
+                          text: t.serialDialog100ChartYAxis,
                           color: "#334155",
                         },
                         grid: { color: "#e2e8f0" },
@@ -310,7 +310,7 @@ export function SerialDialog100(props: Props) {
           onClick={onClose}
           className="ml-auto px-3 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm"
         >
-          Zavřít
+          {t.serialDialog100Close}
         </button>
       </ModalActions>
     </Modal>

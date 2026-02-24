@@ -64,6 +64,7 @@ export const translations = {
     vaDescription:
       "Měření závislosti napětí na diodě na proudu. Nastavte proudový offset a měřte napětí.",
     vaCurrentLabel: "Proud [uA]",
+    vaCurrentRangeHint: "Rozsah: 1–30 000 µA",
     vaAddPoint: "Přidat do grafu",
     vaChartTitle: "VA Charakteristika",
     vaLogX: "Logaritmická osa X",
@@ -80,6 +81,7 @@ export const translations = {
     angleSetAmplitudeLabel: "Nastavit amplitudu [uA]",
     angleAddPoint: "Přidat bod",
     angleInputPlaceholder: "0-30000",
+    angleInputRangeHint: "Rozsah: 0–30 000 µA",
     angleCurrentValuesTitle: "Aktuální hodnoty",
     angleDetectorLabel: "Úhel detektoru",
     angleVoltageLabel: "Napětí detektoru",
@@ -96,7 +98,9 @@ export const translations = {
     frequencyDescription:
       "Měření závislosti napětí na frekvenci. Offset: 50% amplitudy.",
     frequencyAmplitudeLabel: "Amplituda [uA]",
+    frequencyAmplitudeRangeHint: "Rozsah: 0–30 000 µA",
     frequencyLabel: "Frekvence [Hz]",
+    frequencyFrequencyRangeHint: "Rozsah: 1–200 000 Hz",
     frequencyAddPoint: "Přidat bod",
     frequencyLogY: "Logaritmická osa Y",
     frequencyTableTitle: "Tabulka měření",
@@ -118,6 +122,7 @@ export const translations = {
     luxDescription:
       "Měření závislosti luxů na proudu. Frekvence: 1000 Hz, offset: 50% amplitudy.",
     luxAmplitudeLabel: "Amplituda [uA]",
+    luxAmplitudeRangeHint: "Rozsah: 0–30 000 µA",
     luxAddPoint: "Přidat bod",
     luxChartTitle: "Lux-Amper charakteristika",
     luxTableTitle: "Tabulka měření",
@@ -226,6 +231,7 @@ export const translations = {
     vaDescription:
       "Measure the LED voltage dependence on current. Set current offset and measure voltage.",
     vaCurrentLabel: "Current [uA]",
+    vaCurrentRangeHint: "Range: 1–30,000 µA",
     vaAddPoint: "Add to chart",
     vaChartTitle: "VA characteristic",
     vaLogX: "Logarithmic X axis",
@@ -242,6 +248,7 @@ export const translations = {
     angleSetAmplitudeLabel: "Set amplitude [uA]",
     angleAddPoint: "Add point",
     angleInputPlaceholder: "0-30000",
+    angleInputRangeHint: "Range: 0–30,000 µA",
     angleCurrentValuesTitle: "Current values",
     angleDetectorLabel: "Detector angle",
     angleVoltageLabel: "Detector voltage",
@@ -258,7 +265,9 @@ export const translations = {
     frequencyDescription:
       "Measure voltage dependence on frequency. Offset: 50% of amplitude.",
     frequencyAmplitudeLabel: "Amplitude [uA]",
+    frequencyAmplitudeRangeHint: "Range: 0–30,000 µA",
     frequencyLabel: "Frequency [Hz]",
+    frequencyFrequencyRangeHint: "Range: 1–200,000 Hz",
     frequencyAddPoint: "Add point",
     frequencyLogY: "Logarithmic Y axis",
     frequencyTableTitle: "Measurements table",
@@ -280,6 +289,7 @@ export const translations = {
     luxDescription:
       "Measure lux dependence on current. Frequency: 1000 Hz, offset: 50% of amplitude.",
     luxAmplitudeLabel: "Amplitude [uA]",
+    luxAmplitudeRangeHint: "Range: 0–30,000 µA",
     luxAddPoint: "Add point",
     luxChartTitle: "Lux-Amper characteristic",
     luxTableTitle: "Measurements table",
