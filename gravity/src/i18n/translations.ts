@@ -1,7 +1,7 @@
 export const translations = {
   cs: {
     // Header
-    title: "Úloha 10: Matematické kyvadlo",
+    title: "Úloha 10: Tíhové zrychlení",
     reset: "Reset",
     export: "Export",
     connectPort: "Připojit port",
@@ -29,6 +29,8 @@ export const translations = {
     serialDialogAveragePeriod: "Průměrná perioda:",
     serialDialogIndexHeader: "#",
     serialDialogPeriodHeader: "Perioda [ms]",
+    serialDialogActionHeader: "Akce",
+    serialDialogDelete: "Smazat",
 
     // Serial dialog 100
     serialDialog100Title: "Měření (až 100 vzorků) - závaží {channel}",
@@ -127,7 +129,7 @@ export const translations = {
   },
   en: {
     // Header
-    title: "Task 10: Mathematical Pendulum",
+    title: "Task 10: Gravitational acceleration",
     reset: "Reset",
     export: "Export",
     connectPort: "Connect Port",
@@ -155,6 +157,8 @@ export const translations = {
     serialDialogAveragePeriod: "Average period:",
     serialDialogIndexHeader: "#",
     serialDialogPeriodHeader: "Period [ms]",
+    serialDialogActionHeader: "Action",
+    serialDialogDelete: "Delete",
 
     // Serial dialog 100
     serialDialog100Title: "Measurement (up to 100 samples) - {channel} weight",

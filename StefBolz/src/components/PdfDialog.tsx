@@ -11,7 +11,7 @@ export const PdfDialog: React.FC<PdfDialogProps> = ({ isOpen, onClose }) => {
   const { t, language } = useLanguage();
   const langCode = language === "cs" ? "cz" : "en";
   const pdfUrl =
-    `https://nasynufyz.ufyz.feec.vutbr.cz/labweb/manual/Uloha10/manual_${langCode}.pdf`;
+    `https://nasynufyz.ufyz.feec.vutbr.cz/labweb/manual/Uloha26/manual_${langCode}.pdf`;
 
   return (
     <Modal

@@ -8,10 +8,10 @@ interface PdfDialogProps {
 }
 
 export const PdfDialog: React.FC<PdfDialogProps> = ({ isOpen, onClose }) => {
-  const { t } = useLanguage();
-  // Placeholder PDF URL - replace with actual URL later
+  const { t, language } = useLanguage();
+  const langCode = language === "cs" ? "cz" : "en";
   const pdfUrl =
-    "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+    `https://nasynufyz.ufyz.feec.vutbr.cz/labweb/manual/Uloha28/manual_${langCode}.pdf`;
 
   return (
     <Modal
